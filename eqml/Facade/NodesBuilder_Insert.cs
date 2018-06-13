@@ -106,39 +106,39 @@ namespace Facade
         }
 
 
-        public void InsertSubscript ()
+        public void InsertSubscript()
         {
-            this.insertMathML (
+            this.insertMathML(
                 "<math xmlns='http://www.w3.org/1998/Math/MathML'><msub><mrow nugenCursor=''/><mrow/></msub></math>");
         }
 
-        public void InsertSuperScript ()
+        public void InsertSuperScript()
         {
-            this.insertMathML (
+            this.insertMathML(
                 "<math xmlns='http://www.w3.org/1998/Math/MathML'><msup><mrow nugenCursor=''/><mrow/></msup></math>");
         }
 
-        public void InsertSubSup ()
+        public void InsertSubSup()
         {
-            this.insertMathML (
+            this.insertMathML(
                 "<math xmlns='http://www.w3.org/1998/Math/MathML'><msubsup><mrow nugenCursor=''/><mrow/><mrow/></msubsup></math>");
         }
 
-        public void InsertSqrt ()
+        public void InsertSqrt()
         {
-            this.insertMathML ("<math xmlns='http://www.w3.org/1998/Math/MathML'><msqrt><mrow nugenCursor=''/></msqrt></math>");
+            this.insertMathML("<math xmlns='http://www.w3.org/1998/Math/MathML'><msqrt><mrow nugenCursor=''/></msqrt></math>");
         }
 
-        public void InsertRoot ()
+        public void InsertRoot()
         {
-            this.insertMathML (
+            this.insertMathML(
                 "<math xmlns='http://www.w3.org/1998/Math/MathML'><mroot><mrow nugenCursor=''/><mrow/></mroot></math>");
         }
 
-        public void InsertFenced (string sCharL, string sCharR)
+        public void InsertFenced(string sCharL, string sCharR)
         {
-            this.insertMathML (
-                string.Concat (
+            this.insertMathML(
+                string.Concat(
                     new string[]
                         {
                             "<math xmlns='http://www.w3.org/1998/Math/MathML'><mrow><mo>", sCharL,
@@ -146,12 +146,12 @@ namespace Facade
                         }));
         }
 
-        public void InsertFenced (string sEntityName_Left, string sEntityName_Right, bool bStretchy)
+        public void InsertFenced(string sEntityName_Left, string sEntityName_Right, bool bStretchy)
         {
-            this.InsertFenced (true, sEntityName_Left, sEntityName_Right, bStretchy);
+            this.InsertFenced(true, sEntityName_Left, sEntityName_Right, bStretchy);
         }
 
-        public void InsertFenced (bool bOnInsert, string sEntityName_Left, string sEntityName_Right, bool bStretchy)
+        public void InsertFenced(bool bOnInsert, string sEntityName_Left, string sEntityName_Right, bool bStretchy)
         {
             try
             {
@@ -163,13 +163,13 @@ namespace Facade
                 {
                     if (bStretchy)
                     {
-                        this.insertMathML (bOnInsert,
+                        this.insertMathML(bOnInsert,
                                    "<math xmlns='http://www.w3.org/1998/Math/MathML'><mrow><mrow nugenCursor=''/><mo>&" +
                                    sEntityName_Right + ";</mo></mrow></math>");
                     }
                     else
                     {
-                        this.insertMathML (bOnInsert,
+                        this.insertMathML(bOnInsert,
                                    "<math xmlns='http://www.w3.org/1998/Math/MathML'><mrow><mrow nugenCursor=''/><mo stretchy=\"false\">&" +
                                    sEntityName_Right + ";</mo></mrow></math>");
                     }
@@ -178,21 +178,21 @@ namespace Facade
                 {
                     if (bStretchy)
                     {
-                        this.insertMathML (bOnInsert,
+                        this.insertMathML(bOnInsert,
                                    "<math xmlns='http://www.w3.org/1998/Math/MathML'><mrow><mo>&" + sEntityName_Left +
                                    ";</mo><mrow nugenCursor=''/></mrow></math>");
                     }
                     else
                     {
-                        this.insertMathML (bOnInsert,
+                        this.insertMathML(bOnInsert,
                                    "<math xmlns='http://www.w3.org/1998/Math/MathML'><mrow><mo stretchy=\"false\">&" +
                                    sEntityName_Left + ";</mo><mrow nugenCursor=''/></mrow></math>");
                     }
                 }
                 else if (bStretchy)
                 {
-                    this.insertMathML (bOnInsert,
-                               string.Concat (
+                    this.insertMathML(bOnInsert,
+                               string.Concat(
                                    new string[]
                                        {
                                            "<math xmlns='http://www.w3.org/1998/Math/MathML'><mrow><mo>&", sEntityName_Left
@@ -201,8 +201,8 @@ namespace Facade
                 }
                 else
                 {
-                    this.insertMathML (bOnInsert,
-                               string.Concat (
+                    this.insertMathML(bOnInsert,
+                               string.Concat(
                                    new string[]
                                        {
                                            "<math xmlns='http://www.w3.org/1998/Math/MathML'><mrow><mo stretchy=\"false\">&"
@@ -216,60 +216,60 @@ namespace Facade
             }
         }
 
-        public void InsertUnder ()
+        public void InsertUnder()
         {
-            this.insertMathML (
+            this.insertMathML(
                 "<math xmlns='http://www.w3.org/1998/Math/MathML'><munder><mrow nugenCursor=''/><mrow/></munder></math>");
         }
 
-        public void InsertOver ()
+        public void InsertOver()
         {
-            this.insertMathML (
+            this.insertMathML(
                 "<math xmlns='http://www.w3.org/1998/Math/MathML'><mover><mrow nugenCursor=''/><mrow/></mover></math>");
         }
 
-        public void InsertUnderOver ()
+        public void InsertUnderOver()
         {
-            this.insertMathML (
+            this.insertMathML(
                 "<math xmlns='http://www.w3.org/1998/Math/MathML'><munderover><mrow nugenCursor=''/><mrow/><mrow/></munderover></math>");
         }
 
-        public void InsertOverAccent (string sEntity)
+        public void InsertOverAccent(string sEntity)
         {
             if (sEntity.Length > 0)
             {
                 string xml = "<math xmlns='http://www.w3.org/1998/Math/MathML'><mover><mrow nugenCursor=''/><mo>&";
                 xml = xml + sEntity;
                 xml = xml + ";</mo></mover></math>";
-                this.insertMathML (xml);
+                this.insertMathML(xml);
             }
         }
 
-        public void InsertUnderAccent (string sEntity)
+        public void InsertUnderAccent(string sEntity)
         {
             if (sEntity.Length > 0)
             {
                 string xml = "<math xmlns='http://www.w3.org/1998/Math/MathML'><munder><mrow nugenCursor=''/><mo>&";
                 xml = xml + sEntity;
                 xml = xml + ";</mo></munder></math>";
-                this.insertMathML (xml);
+                this.insertMathML(xml);
             }
         }
 
-        public void InsertPrime (string sEntity)
+        public void InsertPrime(string sEntity)
         {
             if (sEntity.Length > 0)
             {
                 string xml = "<math xmlns='http://www.w3.org/1998/Math/MathML'><msup><mrow nugenCursor=''/><mo>&";
                 xml = xml + sEntity;
                 xml = xml + ";</mo></msup></math>";
-                this.insertMathML (xml);
+                this.insertMathML(xml);
             }
         }
 
-        public void InsertMatrix (int nRows, int nCols)
+        public void InsertMatrix(int nRows, int nCols)
         {
-            if (this.ScriptEligible () && ((nRows > 0) && (nCols > 0)))
+            if (this.ScriptEligible() && ((nRows > 0) && (nCols > 0)))
             {
                 int i = 0;
                 int j = 0;
@@ -292,15 +292,15 @@ namespace Facade
                     xml = xml + "</mtr>";
                 }
                 xml = xml + "</mtable></math>";
-                this.insertMathML (xml);
+                this.insertMathML(xml);
             }
         }
 
-        public void InsertStretchyArrow_Over (string entityName)
+        public void InsertStretchyArrow_Over(string entityName)
         {
             try
             {
-                this.insertMathML ("<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mover><mo>&" + entityName +
+                this.insertMathML("<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mover><mo>&" + entityName +
                            ";</mo><mrow nugenCursor=''/></mover></math>");
             }
             catch
@@ -308,11 +308,11 @@ namespace Facade
             }
         }
 
-        public void InsertStretchyArrow_Under (string entityName)
+        public void InsertStretchyArrow_Under(string entityName)
         {
             try
             {
-                this.insertMathML ("<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><munder><mo>&" + entityName +
+                this.insertMathML("<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><munder><mo>&" + entityName +
                            ";</mo><mrow nugenCursor=''/></munder></math>");
             }
             catch
@@ -320,11 +320,11 @@ namespace Facade
             }
         }
 
-        public void InsertStretchyArrow_UnderOver (string entityName)
+        public void InsertStretchyArrow_UnderOver(string entityName)
         {
             try
             {
-                this.insertMathML ("<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><munderover><mo>&" + entityName +
+                this.insertMathML("<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><munderover><mo>&" + entityName +
                            ";</mo><mrow nugenCursor=''/><mrow/></munderover></math>");
             }
             catch
@@ -332,48 +332,51 @@ namespace Facade
             }
         }
 
-        public void InsertEntitySmall (string entityName)
+        public void InsertEntitySmall(string entityName)
         {
-            this.insertMathML ("<math xmlns='http://www.w3.org/1998/Math/MathML'><mi nugenCursorEnd=''>&" + entityName +
+            this.insertMathML("<math xmlns='http://www.w3.org/1998/Math/MathML'><mi nugenCursorEnd=''>&" + entityName +
                        ";</mi></math>");
         }
 
-        public void InsertEntityBig (string entityName)
+        public void InsertEntityBig(string entityName)
         {
-            this.insertMathML (
+            this.insertMathML(
                 "<math xmlns='http://www.w3.org/1998/Math/MathML'><mi nugenCursorEnd='' mathvariant=\"normal\">&" +
                 entityName + ";</mi></math>");
         }
 
-        public void InsertEntityOperator (Glyph entity)
+        public void InsertEntityOperator(Glyph entity)
         {
-            if (!this.StretchyBrackets && this.IsStretchy (entity))
+            if (!this.StretchyBrackets && this.IsStretchy(entity))
             {
-                this.insertMathML (
+                this.insertMathML(
                     "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo stretchy=\"false\" nugenCursorEnd=''>&" +
                     entity.Name + ";</mo></math>");
             }
             else
             {
-                this.insertMathML (
+                this.insertMathML(
                     "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&" + entity.Name +
                            ";</mo></math>");
             }
         }
 
-        public void InsertEntityOperator (string entityName)
+        public void InsertEntityOperator(string content, bool insertByName)
         {
             Glyph glyph = null;
             try
             {
-                glyph = this.entityManager.ByName (entityName);
+                if (insertByName)
+                    glyph = this.entityManager.ByName(content);
+                else
+                    glyph = this.entityManager.ByUnicode(content);
             }
             catch
             {
             }
             if (glyph != null)
             {
-                this.InsertEntityOperator (glyph);
+                this.InsertEntityOperator(glyph);
             }
         }
     }
