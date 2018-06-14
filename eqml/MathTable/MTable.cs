@@ -40,7 +40,7 @@ namespace MathTable
             this.minlabelSpacing = "0.8em";
             this.colLines = new TableLineStyle[] { TableLineStyle.NONE };
             this.colSpacing = new string[] { "0.8em" };
-            this.colAligns = new HAlign[] { HAlign.CENTER };
+            this.colAligns = new HAlign[] { HAlign.LEFT };
             this.rowAligns = new RowAlign[] { RowAlign.BASELINE };
             this.node_ = node;
             this.attrs = AttributeBuilder.mtableAttributes(node);
@@ -1175,7 +1175,7 @@ namespace MathTable
 
         public void ColAligns()
         {
-            HAlign hAlign = HAlign.CENTER;
+            HAlign hAlign = HAlign.LEFT;
             bool same = true;
             for (int row_index = 0; row_index < this.RowCount; row_index++)
             {
