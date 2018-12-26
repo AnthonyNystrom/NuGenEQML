@@ -94,13 +94,13 @@ namespace UI
         public event EventHandler Event_OnUndoRedoStackChanged;
         public event ValidationHandler Event_OnValidationError;
 
-        static CoreControl ()
+        static CoreControl()
         {
             CoreControl.BITSPIXEL = 12;
             CoreControl.PLANES = 14;
         }
 
-        public CoreControl (EntityManager MathMLEntityManager, FontCollection FontCollection)
+        public CoreControl(EntityManager MathMLEntityManager, FontCollection FontCollection)
         {
             needUpdate = false;
             needCheckIsPaletted = true;
@@ -118,7 +118,7 @@ namespace UI
             rMargin = 0;
             tMargin = 0;
             bMargin = 0;
-            bbox = new BBox ();
+            bbox = new BBox();
             markX = 0;
             markY = 0;
             caretHeight = 0;
@@ -129,8 +129,8 @@ namespace UI
             haveScrollbars_ = false;
             try
             {
-                InitializeComponent ();
-                Init (MathMLEntityManager, FontCollection);
+                InitializeComponent();
+                Init(MathMLEntityManager, FontCollection);
                 isInitialized_ = true;
             }
             catch
@@ -138,7 +138,7 @@ namespace UI
             }
         }
 
-        protected override void Dispose (bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
@@ -152,91 +152,91 @@ namespace UI
                 catch
                 {
                 }
-                
+
                 try
                 {
-                    caretThread.Abort ();
+                    caretThread.Abort();
                     caretThread = null;
                 }
                 catch
                 {
                 }
             }
-            base.Dispose (disposing);
+            base.Dispose(disposing);
         }
 
-        [DllImport ("gdi32.dll")]
-        public static extern short GetDeviceCaps ([In, MarshalAs (UnmanagedType.U4)] int hDc,
-                                                  [In, MarshalAs (UnmanagedType.U2)] short funct);
+        [DllImport("gdi32.dll")]
+        public static extern short GetDeviceCaps([In, MarshalAs(UnmanagedType.U4)] int hDc,
+                                                  [In, MarshalAs(UnmanagedType.U2)] short funct);
 
-        protected override void OnDoubleClick (EventArgs e)
+        protected override void OnDoubleClick(EventArgs e)
         {
-            base.OnDoubleClick (e);
+            base.OnDoubleClick(e);
         }
 
-        protected override void OnGotFocus (EventArgs e)
+        protected override void OnGotFocus(EventArgs e)
         {
-            ReRender ();
-            base.OnGotFocus (e);
+            ReRender();
+            base.OnGotFocus(e);
             try
             {
-                Event_OnGotFocus (this, new EventArgs ());
+                Event_OnGotFocus(this, new EventArgs());
             }
             catch
             {
             }
         }
 
-        protected override void OnInvalidated (InvalidateEventArgs e)
+        protected override void OnInvalidated(InvalidateEventArgs e)
         {
             rect_ = e.InvalidRect;
-            base.OnInvalidated (e);
+            base.OnInvalidated(e);
         }
 
-        protected override void OnKeyPress (KeyPressEventArgs e)
+        protected override void OnKeyPress(KeyPressEventArgs e)
         {
-            base.OnKeyPress (e);
+            base.OnKeyPress(e);
             if (!e.Handled)
             {
-                if ((char.IsPunctuation (e.KeyChar) || char.IsSeparator (e.KeyChar)) ||
-                         ((char.IsSurrogate (e.KeyChar) || char.IsSymbol (e.KeyChar)) ||
-                          char.IsLetterOrDigit (e.KeyChar)))
+                if ((char.IsPunctuation(e.KeyChar) || char.IsSeparator(e.KeyChar)) ||
+                         ((char.IsSurrogate(e.KeyChar) || char.IsSymbol(e.KeyChar)) ||
+                          char.IsLetterOrDigit(e.KeyChar)))
                 {
-                    if (builder_.InsertChar (e.KeyChar, !NonStretchyBrackets, AutoCloseBrackets))
+                    if (builder_.InsertChar(e.KeyChar, !NonStretchyBrackets, AutoCloseBrackets))
                     {
-                        ReRender ();
-                        base.Update ();
+                        ReRender();
+                        base.Update();
                     }
                 }
             }
         }
 
-        protected override void OnLoad (EventArgs e)
+        protected override void OnLoad(EventArgs e)
         {
-            base.OnLoad (e);
+            base.OnLoad(e);
         }
 
-        protected override void OnLostFocus (EventArgs e)
+        protected override void OnLostFocus(EventArgs e)
         {
             try
             {
                 if ((builder_ != null) && builder_.HasSelection)
                 {
-                    ReRender ();
+                    ReRender();
                 }
                 else
                 {
-                    InvalidateBbox ();
-                    InvalidateMark ();
+                    InvalidateBbox();
+                    InvalidateMark();
                 }
             }
             catch
             {
             }
-            base.OnLostFocus (e);
+            base.OnLostFocus(e);
             try
             {
-                Event_OnLostFocus (this, new EventArgs ());
+                Event_OnLostFocus(this, new EventArgs());
             }
             catch
             {
@@ -254,7 +254,7 @@ namespace UI
             }
         }
 
-        protected override void OnMouseDown (MouseEventArgs e)
+        protected override void OnMouseDown(MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -269,17 +269,17 @@ namespace UI
                                 builder_.HasSelection = true;
                             }
                             if (
-                                builder_.SelectionTo ((e.X + OffsetX) - lMargin,
+                                builder_.SelectionTo((e.X + OffsetX) - lMargin,
                                               (e.Y + OffsetY) - tMargin))
                             {
-                                ReRender ();
+                                ReRender();
                             }
                         }
                         else
                         {
                             try
                             {
-                                SelectAt (e.X, e.Y);
+                                SelectAt(e.X, e.Y);
                             }
                             catch
                             {
@@ -291,10 +291,10 @@ namespace UI
                 {
                 }
             }
-            base.OnMouseDown (e);
+            base.OnMouseDown(e);
         }
 
-        protected override void OnMouseMove (MouseEventArgs e)
+        protected override void OnMouseMove(MouseEventArgs e)
         {
             try
             {
@@ -305,61 +305,61 @@ namespace UI
                         builder_.HasSelection = true;
                     }
                     else if (
-                        builder_.SelectionTo ((e.X + OffsetX) - lMargin,
+                        builder_.SelectionTo((e.X + OffsetX) - lMargin,
                                       (e.Y + OffsetY) - tMargin))
                     {
                         needUpdate = true;
-                        ReRender ();
+                        ReRender();
                     }
                 }
             }
             catch
             {
             }
-            base.OnMouseMove (e);
+            base.OnMouseMove(e);
         }
 
-        protected override void OnMouseUp (MouseEventArgs e)
+        protected override void OnMouseUp(MouseEventArgs e)
         {
             if (builder_.HasSelection)
             {
-                builder_.RemoveSelection ();
+                builder_.RemoveSelection();
             }
-            base.OnMouseUp (e);
+            base.OnMouseUp(e);
         }
 
-        protected override void OnMouseWheel (MouseEventArgs e)
+        protected override void OnMouseWheel(MouseEventArgs e)
         {
             try
             {
-                VertScroll (-e.Delta);
+                VertScroll(-e.Delta);
             }
             catch
             {
             }
-            base.OnMouseWheel (e);
+            base.OnMouseWheel(e);
         }
 
-        protected override void OnPaint (PaintEventArgs e)
+        protected override void OnPaint(PaintEventArgs e)
         {
             Node selectedNode = null;
             Node multiSelectNode = null;
             int selectedNodeMark = 0;
             int multiSelectMark = 0;
             bool multiSelect = false;
-            
+
             try
             {
                 if (isInitialized_)
                 {
                     try
                     {
-                        if ((builder_ != null) && (builder_.GetCurrentlySelectedNode () != null))
+                        if ((builder_ != null) && (builder_.GetCurrentlySelectedNode() != null))
                         {
                             DetermineIsPaletted(e.Graphics);
                             builder_.SetupPainting(e.Graphics, isAntiAlias, isPaletted);
                             builder_.getRoot();
-                            
+
                             builder_.MeasureAll();
                             selectedNode = builder_.GetCurrentlySelectedNode();
                             try
@@ -368,7 +368,7 @@ namespace UI
                                 selectedNodeMark = selectedNode.InternalMark;
                                 multiSelectMark = builder_.CurrentCaret();
                                 multiSelect = builder_.HasSelection;
-                                
+
                             }
                             catch
                             {
@@ -395,7 +395,7 @@ namespace UI
                                 ResizeScrollbars();
                             }
                             builder_.FillBackground(updateRect);
-                            
+
                             if (builder_.HasSelection && Focused)
                             {
                                 try
@@ -466,33 +466,33 @@ namespace UI
                         }
                         else
                         {
-                            ResizeScrollbars ();
+                            ResizeScrollbars();
                         }
                     }
                     catch (Exception)
                     {
-                        ReRender ();
+                        ReRender();
                     }
                 }
             }
             catch
             {
             }
-            
+
             try
             {
                 if (selectionInfo == null)
                 {
-                    selectionInfo = new SelectionInfo (selectedNode, selectedNodeMark, multiSelectNode, multiSelectMark, multiSelect);
+                    selectionInfo = new SelectionInfo(selectedNode, selectedNodeMark, multiSelectNode, multiSelectMark, multiSelect);
                 }
                 else
                 {
-                    SelectionInfo info = new SelectionInfo (selectedNode, selectedNodeMark, multiSelectNode, multiSelectMark, multiSelect);
-                    if (!selectionInfo.Equals (info))
+                    SelectionInfo info = new SelectionInfo(selectedNode, selectedNodeMark, multiSelectNode, multiSelectMark, multiSelect);
+                    if (!selectionInfo.Equals(info))
                     {
                         try
                         {
-                            Event_OnSelectionChanged (this, new SelectionArgs (builder_.HasSelection));
+                            Event_OnSelectionChanged(this, new SelectionArgs(builder_.HasSelection));
                         }
                         catch
                         {
@@ -504,218 +504,232 @@ namespace UI
             catch
             {
             }
-            base.OnPaint (e);
+            base.OnPaint(e);
         }
 
-        protected override void OnResize (EventArgs e)
+        protected override void OnResize(EventArgs e)
         {
-            DoResize (base.Width, base.Height, true, true);
+            DoResize(base.Width, base.Height, true, true);
         }
 
-        public void InsertFraction ()
+        public void pub_InsertChar(char c)
         {
-            builder_.InsertFraction ();
-            ReRender ();
-            base.Focus ();
-        }
-
-        public void InsertFraction_Bevelled ()
-        {
-            builder_.InsertFraction_Bevelled ();
-            ReRender ();
-            base.Focus ();
-        }
-
-        public void InsertText ()
-        {
-            builder_.insertText ();
-            ReRender ();
-            base.Focus ();
-        }
-
-        public void InsertAction ()
-        {
-            builder_.InsertAction ();
-            ReRender ();
-            base.Focus ();
-        }
-
-        public void InsertFenced ()
-        {
-            builder_.InsertFenced ();
-            ReRender ();
-            base.Focus ();
-        }
-
-        public void InsertPhantom ()
-        {
-            builder_.InsertPhantom ();
-            ReRender ();
-            base.Focus ();
-        }
-
-        public void InsertMatrix (int Rows, int Cols)
-        {
-            builder_.InsertMatrix (Rows, Cols);
-            ReRender ();
-        }
-
-        public void Command_SupScript ()
-        {
-            if (builder_.InsertSupScript ())
+            if ((char.IsPunctuation(c) || char.IsSeparator(c)) ||
+                     ((char.IsSurrogate(c) || char.IsSymbol(c)) ||
+                      char.IsLetterOrDigit(c)))
             {
-                ReRender ();
+                if (builder_.InsertChar(c, !NonStretchyBrackets, AutoCloseBrackets))
+                {
+                    ReRender();
+                    base.Update();
+                }
             }
-            base.Focus ();
         }
 
-        public void Command_SubSupScript ()
+        public void InsertFraction()
         {
-            if (builder_.InsertSubSupScript ())
+            builder_.InsertFraction();
+            ReRender();
+            base.Focus();
+        }
+
+        public void InsertFraction_Bevelled()
+        {
+            builder_.InsertFraction_Bevelled();
+            ReRender();
+            base.Focus();
+        }
+
+        public void InsertText()
+        {
+            builder_.insertText();
+            ReRender();
+            base.Focus();
+        }
+
+        public void InsertAction()
+        {
+            builder_.InsertAction();
+            ReRender();
+            base.Focus();
+        }
+
+        public void InsertFenced()
+        {
+            builder_.InsertFenced();
+            ReRender();
+            base.Focus();
+        }
+
+        public void InsertPhantom()
+        {
+            builder_.InsertPhantom();
+            ReRender();
+            base.Focus();
+        }
+
+        public void InsertMatrix(int Rows, int Cols)
+        {
+            builder_.InsertMatrix(Rows, Cols);
+            ReRender();
+        }
+
+        public void Command_SupScript()
+        {
+            if (builder_.InsertSupScript())
             {
-                ReRender ();
+                ReRender();
             }
-            base.Focus ();
+            base.Focus();
         }
 
-        public void Command_SubScript ()
+        public void Command_SubSupScript()
         {
-            if (builder_.InsertSubScript ())
+            if (builder_.InsertSubSupScript())
             {
-                ReRender ();
+                ReRender();
             }
-            base.Focus ();
+            base.Focus();
         }
 
-        private void OnInsert ()
+        public void Command_SubScript()
         {
-           needUpdate = true;
-        }
-        
-        public void InsertUnder ()
-        {
-            builder_.InsertUnder ();
-            ReRender ();
-            base.Focus ();
+            if (builder_.InsertSubScript())
+            {
+                ReRender();
+            }
+            base.Focus();
         }
 
-        public void InsertOver ()
+        private void OnInsert()
         {
-            builder_.InsertOver ();
-            ReRender ();
-            base.Focus ();
+            needUpdate = true;
         }
 
-        public void InsertUnderOver ()
+        public void InsertUnder()
         {
-            builder_.InsertUnderOver ();
-            ReRender ();
-            base.Focus ();
+            builder_.InsertUnder();
+            ReRender();
+            base.Focus();
         }
 
-        public void InsertOverAccent (string sEntity)
+        public void InsertOver()
+        {
+            builder_.InsertOver();
+            ReRender();
+            base.Focus();
+        }
+
+        public void InsertUnderOver()
+        {
+            builder_.InsertUnderOver();
+            ReRender();
+            base.Focus();
+        }
+
+        public void InsertOverAccent(string sEntity)
         {
             if (sEntity.Length > 0)
             {
-                builder_.InsertOverAccent (sEntity);
-                ReRender ();
+                builder_.InsertOverAccent(sEntity);
+                ReRender();
             }
-            base.Focus ();
+            base.Focus();
         }
 
-        public void InsertUnderAccent (string sEntity)
+        public void InsertUnderAccent(string sEntity)
         {
             if (sEntity.Length > 0)
             {
-                builder_.InsertUnderAccent (sEntity);
-                ReRender ();
+                builder_.InsertUnderAccent(sEntity);
+                ReRender();
             }
-            base.Focus ();
+            base.Focus();
         }
 
-        public void InsertPrime (string sEntity)
+        public void InsertPrime(string sEntity)
         {
             if (sEntity.Length > 0)
             {
-                builder_.InsertPrime (sEntity);
-                ReRender ();
+                builder_.InsertPrime(sEntity);
+                ReRender();
             }
-            base.Focus ();
+            base.Focus();
         }
 
-        public void InsertSqrt ()
+        public void InsertSqrt()
         {
-            builder_.InsertSqrt ();
-            ReRender ();
-            base.Focus ();
+            builder_.InsertSqrt();
+            ReRender();
+            base.Focus();
         }
 
-        public void InsertRoot ()
+        public void InsertRoot()
         {
-            builder_.InsertRoot ();
-            ReRender ();
-            base.Focus ();
+            builder_.InsertRoot();
+            ReRender();
+            base.Focus();
         }
 
-        public void InsertFenced (string sCharL, string sCharR)
+        public void InsertFenced(string sCharL, string sCharR)
         {
-            builder_.InsertFenced (sCharL, sCharR);
-            ReRender ();
-            base.Focus ();
+            builder_.InsertFenced(sCharL, sCharR);
+            ReRender();
+            base.Focus();
         }
 
-        public void InsertBrackets (string sEntityName_Left, string sEntityName_Right, bool bStretchy)
+        public void InsertBrackets(string sEntityName_Left, string sEntityName_Right, bool bStretchy)
         {
-            builder_.InsertFenced (sEntityName_Left, sEntityName_Right, bStretchy);
-            ReRender ();
-            base.Focus ();
+            builder_.InsertFenced(sEntityName_Left, sEntityName_Right, bStretchy);
+            ReRender();
+            base.Focus();
         }
 
-        public void InsertSubScript ()
+        public void InsertSubScript()
         {
-            builder_.InsertSubscript ();
-            ReRender ();
-            base.Focus ();
+            builder_.InsertSubscript();
+            ReRender();
+            base.Focus();
         }
 
-        public void InsertSuperScript ()
+        public void InsertSuperScript()
         {
-            builder_.InsertSuperScript ();
-            ReRender ();
-            base.Focus ();
+            builder_.InsertSuperScript();
+            ReRender();
+            base.Focus();
         }
 
-        public void InsertSubSupScript ()
+        public void InsertSubSupScript()
         {
-            builder_.InsertSubSup ();
-            ReRender ();
-            base.Focus ();
+            builder_.InsertSubSup();
+            ReRender();
+            base.Focus();
         }
 
         //
-        public void Delete ()
+        public void Delete()
         {
             try
             {
-                builder_.DoDelete ();
+                builder_.DoDelete();
                 needUpdate = true;
-                ReRender ();
+                ReRender();
             }
             catch
             {
             }
         }
         //
-        public void Cut ()
+        public void Cut()
         {
             try
             {
                 if (builder_.HasSelection)
                 {
-                    DoCut ();
-                    ReRender ();
-                    base.Update ();
-                    Delete ();
+                    DoCut();
+                    ReRender();
+                    base.Update();
+                    Delete();
                 }
             }
             catch
@@ -723,7 +737,7 @@ namespace UI
             }
         }
         //
-        public bool CopyActive ()
+        public bool CopyActive()
         {
             bool r = false;
             if (builder_ != null)
@@ -733,7 +747,7 @@ namespace UI
             return r;
         }
         //
-        public bool CutActive ()
+        public bool CutActive()
         {
             bool r = false;
             if (builder_ != null)
@@ -743,34 +757,34 @@ namespace UI
             return r;
         }
         //
-        public bool UndoActive ()
+        public bool UndoActive()
         {
             bool r = false;
             if (builder_ != null)
             {
-                r = builder_.HasUndo ();
+                r = builder_.HasUndo();
             }
             return r;
         }
         //
-        public bool RedoActive ()
+        public bool RedoActive()
         {
             bool redo = false;
             if (builder_ != null)
             {
-                redo = builder_.HasRedo ();
+                redo = builder_.HasRedo();
             }
             return redo;
         }
         //
-        public void Undo ()
+        public void Undo()
         {
             try
             {
-                if (builder_.Undo ())
+                if (builder_.Undo())
                 {
                     needUpdate = true;
-                    ReRender ();
+                    ReRender();
                 }
             }
             catch
@@ -778,14 +792,14 @@ namespace UI
             }
         }
         //
-        public void Redo ()
+        public void Redo()
         {
             try
             {
-                if (builder_.Redo ())
+                if (builder_.Redo())
                 {
                     needUpdate = true;
-                    ReRender ();
+                    ReRender();
                 }
             }
             catch
@@ -793,24 +807,24 @@ namespace UI
             }
         }
         //
-        public void DoCut ()
+        public void DoCut()
         {
             string xml = "";
-            DataObject dataObject = new DataObject ();
+            DataObject dataObject = new DataObject();
             try
             {
-                xml = builder_.CaptureForClipboard ();
-                xml = xml.Trim ();
-                dataObject.SetData (DataFormats.UnicodeText, true, xml);
-                Clipboard.SetDataObject (dataObject, true);
+                xml = builder_.CaptureForClipboard();
+                xml = xml.Trim();
+                dataObject.SetData(DataFormats.UnicodeText, true, xml);
+                Clipboard.SetDataObject(dataObject, true);
             }
-            catch (Exception )
+            catch (Exception)
             {
-                
+
             }
         }
         //
-        public void Copy ()
+        public void Copy()
         {
             try
             {
@@ -819,16 +833,16 @@ namespace UI
                     return;
                 }
                 string xml = "";
-                DataObject dataObject = new DataObject ();
+                DataObject dataObject = new DataObject();
                 try
                 {
-                    xml = builder_.CaptureForClipboard ();
-                    
-                    xml = xml.Trim ();
-                    dataObject.SetData (DataFormats.UnicodeText, true, xml);
-                    Clipboard.SetDataObject (dataObject, true);
+                    xml = builder_.CaptureForClipboard();
+
+                    xml = xml.Trim();
+                    dataObject.SetData(DataFormats.UnicodeText, true, xml);
+                    Clipboard.SetDataObject(dataObject, true);
                 }
-                catch (Exception )
+                catch (Exception)
                 {
                 }
             }
@@ -837,32 +851,32 @@ namespace UI
             }
         }
         //
-        public string GetXML (bool bStrip_Namespace)
+        public string GetXML(bool bStrip_Namespace)
         {
             return builder_.SaveToXML(bStrip_Namespace);
         }
         //
-        public void Insert_MathML (string xml, bool doValidation)
+        public void Insert_MathML(string xml, bool doValidation)
         {
             try
             {
                 bool isValid = true;
-                xml = xml.Trim ();
+                xml = xml.Trim();
                 if (doValidation)
                 {
-                    isValid = builder_.Validate (xml);
+                    isValid = builder_.Validate(xml);
                 }
                 if (isValid)
                 {
-                    xml = builder_.ProcessEntities (xml);
+                    xml = builder_.ProcessEntities(xml);
                     if (xml.Length <= 0)
                     {
                         return;
                     }
-                    builder_.insertMathML (xml);
+                    builder_.insertMathML(xml);
                     needUpdate = true;
-                    ReRender ();
-                    base.Focus ();
+                    ReRender();
+                    base.Focus();
                 }
             }
             catch
@@ -870,13 +884,13 @@ namespace UI
             }
         }
         //
-        public void Paste ()
+        public void Paste()
         {
-            IDataObject dataObject = Clipboard.GetDataObject ();
-            if (dataObject.GetDataPresent (DataFormats.Text) || dataObject.GetDataPresent (DataFormats.UnicodeText))
+            IDataObject dataObject = Clipboard.GetDataObject();
+            if (dataObject.GetDataPresent(DataFormats.Text) || dataObject.GetDataPresent(DataFormats.UnicodeText))
             {
-                string xml = dataObject.GetData (DataFormats.UnicodeText).ToString ();
-                xml = xml.Trim ();
+                string xml = dataObject.GetData(DataFormats.UnicodeText).ToString();
+                xml = xml.Trim();
                 if (xml.Length == 0)
                 {
                     return;
@@ -885,47 +899,47 @@ namespace UI
                 {
                     return;
                 }
-                else if ((xml.Length > 5) && (xml.Substring (0, 5) == "<math"))
+                else if ((xml.Length > 5) && (xml.Substring(0, 5) == "<math"))
                 {
                     int index = 0;
-                    index = xml.IndexOf (">");
+                    index = xml.IndexOf(">");
                     if (index != -1)
                     {
                         xml = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
-                                xml.Substring (index + 1, (xml.Length - index) - 1);
+                                xml.Substring(index + 1, (xml.Length - index) - 1);
                     }
                 }
-                else if ((xml.Length > 7) && (xml.Substring (0, 7) == "<m:math"))
+                else if ((xml.Length > 7) && (xml.Substring(0, 7) == "<m:math"))
                 {
                     int index = 0;
-                    index = xml.IndexOf (">");
+                    index = xml.IndexOf(">");
                     if (index != -1)
                     {
                         xml = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
-                                xml.Substring (index + 1, (xml.Length - index) - 1);
-                        xml = xml.Replace ("<m:", "<m");
-                        xml = xml.Replace ("</m:", "<m");
+                                xml.Substring(index + 1, (xml.Length - index) - 1);
+                        xml = xml.Replace("<m:", "<m");
+                        xml = xml.Replace("</m:", "<m");
                     }
                 }
-                if (builder_.Validate (xml))
+                if (builder_.Validate(xml))
                 {
-                    xml = builder_.ProcessEntities (xml);
+                    xml = builder_.ProcessEntities(xml);
                     if (xml.Length > 0)
                     {
-                        builder_.insertMathML (xml, true);
+                        builder_.insertMathML(xml, true);
                         needUpdate = true;
-                        ReRender ();
+                        ReRender();
                     }
                 }
             }
-            base.Focus ();
+            base.Focus();
         }
         //
-        public void DoResize (int w, int h, bool bSizeScrollbars, bool bSetVisibleRectangle)
+        public void DoResize(int w, int h, bool bSizeScrollbars, bool bSetVisibleRectangle)
         {
             int height = 0;
             int width = 0;
-            base.Size = new Size (w, h);
+            base.Size = new Size(w, h);
             if (builder_ != null)
             {
                 if ((horScroller_ != null) && horScroller_.Visible)
@@ -944,99 +958,99 @@ namespace UI
                 {
                     width = w;
                 }
-                builder_.SetClientHeight (height);
-                builder_.SetClientWidth (width);
+                builder_.SetClientHeight(height);
+                builder_.SetClientWidth(width);
             }
-            ReRender ();
+            ReRender();
             if (bSizeScrollbars)
             {
-                ResizeScrollbars ();
+                ResizeScrollbars();
             }
             if (bSetVisibleRectangle)
             {
-                SetVisibleRectangle ();
+                SetVisibleRectangle();
             }
         }
 
-        private void Init (EntityManager MathMLEntityManager, FontCollection FontCollection)
+        private void Init(EntityManager MathMLEntityManager, FontCollection FontCollection)
         {
             try
             {
-                SystemEvents.UserPreferenceChanged += new UserPreferenceChangedEventHandler (UserPrefChanged);
+                SystemEvents.UserPreferenceChanged += new UserPreferenceChangedEventHandler(UserPrefChanged);
             }
             catch
             {
             }
             fonts_ = FontCollection;
-            selectionBrush_ = new SolidBrush (Color.Gray);
-                
-            operators_ = new OperatorDictionary ();
-            builder_ = new NodesBuilder (base.ClientRectangle.Width - 20, operators_);
-           
-            builder_.setFonts (fonts_);
-            builder_.SetOrigin (lMargin - OffsetX, tMargin - OffsetY);
+            selectionBrush_ = new SolidBrush(Color.Gray);
+
+            operators_ = new OperatorDictionary();
+            builder_ = new NodesBuilder(base.ClientRectangle.Width - 20, operators_);
+
+            builder_.setFonts(fonts_);
+            builder_.SetOrigin(lMargin - OffsetX, tMargin - OffsetY);
             if (MathMLEntityManager == null)
             {
-                entityManager = new EntityManager (fonts_);
+                entityManager = new EntityManager(fonts_);
             }
             else
             {
                 entityManager = MathMLEntityManager;
             }
-            builder_.SetEntityManager (entityManager);
-            builder_.UndoRedo += new EventHandler (UndoRedoHandler);
-            
-            builder_.InvalidXML += new InvalidXMLFile (OnInvalidXML);
-            
-            builder_.InsertHappened += new InsertionHappenned (OnInsert);
-            base.SetStyle (ControlStyles.UserPaint, true);
-            base.SetStyle (ControlStyles.AllPaintingInWmPaint, true);
-            base.SetStyle (ControlStyles.DoubleBuffer, true);
-            caretBlackPen = new Pen (Color.Black);
-            caretBluePen = new Pen (Color.Blue);
-            caretThread = new Thread (new ThreadStart (CaretThreadProc));
-            caretThread.Start ();
+            builder_.SetEntityManager(entityManager);
+            builder_.UndoRedo += new EventHandler(UndoRedoHandler);
+
+            builder_.InvalidXML += new InvalidXMLFile(OnInvalidXML);
+
+            builder_.InsertHappened += new InsertionHappenned(OnInsert);
+            base.SetStyle(ControlStyles.UserPaint, true);
+            base.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+            base.SetStyle(ControlStyles.DoubleBuffer, true);
+            caretBlackPen = new Pen(Color.Black);
+            caretBluePen = new Pen(Color.Blue);
+            caretThread = new Thread(new ThreadStart(CaretThreadProc));
+            caretThread.Start();
             canvasWidth = 0;
             canvasHeight = 0;
-            ResizeScrollbars ();
+            ResizeScrollbars();
             horScroller_.Visible = false;
             vertScroller_.Visible = false;
             vertScroller_.TabStop = false;
             horScroller_.TabStop = false;
-            vertScroller_.GotFocus += new EventHandler (VertGotFocusHandler);
-            horScroller_.GotFocus += new EventHandler (HorzGotFocusHandler);
-            builder_.PropogateEntityManager ();
-            types = new Types ();
-            builder_.SetTypes (types);
-            
-            SetAntialias (true);
-            
+            vertScroller_.GotFocus += new EventHandler(VertGotFocusHandler);
+            horScroller_.GotFocus += new EventHandler(HorzGotFocusHandler);
+            builder_.PropogateEntityManager();
+            types = new Types();
+            builder_.SetTypes(types);
+
+            SetAntialias(true);
+
             try
             {
-                UpdateMargins ();
+                UpdateMargins();
             }
             catch
             {
             }
-            DoResize (base.ClientRectangle.Width, base.ClientRectangle.Height, true, false);
+            DoResize(base.ClientRectangle.Width, base.ClientRectangle.Height, true, false);
             if (base.ClientRectangle.Width > 50)
             {
-                SetWidth ((base.ClientRectangle.Width - vertScroller_.Width) - 2);
+                SetWidth((base.ClientRectangle.Width - vertScroller_.Width) - 2);
             }
             else
             {
-                SetWidth (50);
+                SetWidth(50);
             }
         }
         //
-        public void ScrollDown ()
+        public void ScrollDown()
         {
             Cursor = Cursors.WaitCursor;
             try
             {
-                ReRender ();
-                base.Update ();
-                base.Focus ();
+                ReRender();
+                base.Update();
+                base.Focus();
             }
             catch
             {
@@ -1044,46 +1058,46 @@ namespace UI
             Cursor = Cursors.Default;
         }
         //
-        public void ReRender ()
+        public void ReRender()
         {
-            FireInvalidate ();
+            FireInvalidate();
             if (needUpdate)
             {
                 needUpdate = false;
-                base.Update ();
-                RefreshAll ();
+                base.Update();
+                RefreshAll();
             }
         }
         //
-        public void FireInvalidate ()
+        public void FireInvalidate()
         {
             if (isInitialized_)
             {
                 if (builder_ != null)
                 {
-                    rect_ = builder_.rectangleToUpdate ();
-                    base.Invalidate (rect_);
+                    rect_ = builder_.rectangleToUpdate();
+                    base.Invalidate(rect_);
                 }
                 else
                 {
-                    base.Invalidate ();
+                    base.Invalidate();
                 }
             }
         }
         //
-        public void RenderWithNewFont ()
+        public void RenderWithNewFont()
         {
             if (isInitialized_)
             {
                 Cursor = Cursors.WaitCursor;
-                builder_.UpdateVertical ();
-                base.Update ();
+                builder_.UpdateVertical();
+                base.Update();
                 ScrollDown();
                 Cursor = Cursors.Default;
             }
         }
         //
-        private void DetermineIsPaletted (Graphics g)
+        private void DetermineIsPaletted(Graphics g)
         {
             if ((g != null) && needCheckIsPaletted)
             {
@@ -1094,9 +1108,9 @@ namespace UI
                     IntPtr hdc = IntPtr.Zero;
                     try
                     {
-                        hdc = g.GetHdc ();
-                        colors = CoreControl.GetDeviceCaps ((int) hdc, CoreControl.BITSPIXEL) *
-                               CoreControl.GetDeviceCaps ((int) hdc, CoreControl.PLANES);
+                        hdc = g.GetHdc();
+                        colors = CoreControl.GetDeviceCaps((int)hdc, CoreControl.BITSPIXEL) *
+                               CoreControl.GetDeviceCaps((int)hdc, CoreControl.PLANES);
                     }
                     catch
                     {
@@ -1107,7 +1121,7 @@ namespace UI
                         {
                             if (hdc != IntPtr.Zero)
                             {
-                                g.ReleaseHdc (hdc);
+                                g.ReleaseHdc(hdc);
                             }
                         }
                         catch
@@ -1130,14 +1144,14 @@ namespace UI
             }
         }
         //
-        private void DrawHighlightSelection (Selection SelectionCollection, PaintEventArgs e)
+        private void DrawHighlightSelection(Selection SelectionCollection, PaintEventArgs e)
         {
             try
             {
-                Node multi = builder_.MultiSelectNode ();
+                Node multi = builder_.MultiSelectNode();
                 Node first = SelectionCollection.First;
                 Node last = SelectionCollection.Last;
-                SelectionCollection.nodesList.Reset ();
+                SelectionCollection.nodesList.Reset();
                 if (multi != null)
                 {
                     SelectionCollection.nodesList.Reset();
@@ -1229,7 +1243,7 @@ namespace UI
             }
         }
         //
-        public void ResizeScrollbars ()
+        public void ResizeScrollbars()
         {
             try
             {
@@ -1278,12 +1292,12 @@ namespace UI
                         {
                             panel_.Visible = true;
                             panel_.Location =
-                                new Point (base.ClientRectangle.Width - vertScroller_.Width,
+                                new Point(base.ClientRectangle.Width - vertScroller_.Width,
                                            base.ClientRectangle.Height - horScroller_.Height);
-                            horScroller_.SetBounds (0, base.ClientRectangle.Height - horScroller_.Height,
+                            horScroller_.SetBounds(0, base.ClientRectangle.Height - horScroller_.Height,
                                                     base.ClientRectangle.Width - vertScroller_.Width,
                                                     horScroller_.Height);
-                            vertScroller_.SetBounds (base.ClientRectangle.Right - vertScroller_.Width, 0,
+                            vertScroller_.SetBounds(base.ClientRectangle.Right - vertScroller_.Width, 0,
                                                      vertScroller_.Width,
                                                      base.ClientRectangle.Height - horScroller_.Height);
                             horScroller_.Minimum = 0;
@@ -1306,10 +1320,10 @@ namespace UI
                         else if (hasV)
                         {
                             panel_.Visible = false;
-                            horScroller_.SetBounds (0, base.ClientRectangle.Height - horScroller_.Height,
+                            horScroller_.SetBounds(0, base.ClientRectangle.Height - horScroller_.Height,
                                                     base.ClientRectangle.Width - vertScroller_.Width,
                                                     horScroller_.Height);
-                            vertScroller_.SetBounds (base.ClientRectangle.Right - vertScroller_.Width, 0,
+                            vertScroller_.SetBounds(base.ClientRectangle.Right - vertScroller_.Width, 0,
                                                      vertScroller_.Width, base.ClientRectangle.Height);
                             horScroller_.Minimum = 0;
                             vertScroller_.Minimum = 0;
@@ -1327,9 +1341,9 @@ namespace UI
                         else if (hasH)
                         {
                             panel_.Visible = false;
-                            horScroller_.SetBounds (0, base.ClientRectangle.Height - horScroller_.Height,
+                            horScroller_.SetBounds(0, base.ClientRectangle.Height - horScroller_.Height,
                                                     base.ClientRectangle.Width, horScroller_.Height);
-                            vertScroller_.SetBounds (base.ClientRectangle.Right - vertScroller_.Width, 0,
+                            vertScroller_.SetBounds(base.ClientRectangle.Right - vertScroller_.Width, 0,
                                                      vertScroller_.Width,
                                                      base.ClientRectangle.Height - horScroller_.Height);
                             horScroller_.Minimum = 0;
@@ -1361,11 +1375,11 @@ namespace UI
                         {
                             if (base.Controls != null)
                             {
-                                base.Controls.AddRange (
-                                    new Control[] {horScroller_, vertScroller_, panel_});
+                                base.Controls.AddRange(
+                                    new Control[] { horScroller_, vertScroller_, panel_ });
                             }
                             haveScrollbars_ = true;
-                            ResizeScrollbars ();
+                            ResizeScrollbars();
                         }
                         catch (Exception)
                         {
@@ -1388,7 +1402,7 @@ namespace UI
                     }
                     if ((finalHVisible != hVisible) || (finalVVisible != vVisible))
                     {
-                        DoResize (base.Width, base.Height, true, true);
+                        DoResize(base.Width, base.Height, true, true);
                     }
                 }
             }
@@ -1398,7 +1412,7 @@ namespace UI
             }
         }
         //
-        private void HorzScrollHandler (object sender, ScrollEventArgs e)
+        private void HorzScrollHandler(object sender, ScrollEventArgs e)
         {
             try
             {
@@ -1417,7 +1431,7 @@ namespace UI
             }
         }
         //
-        private void VertScrollHandler (object sender, ScrollEventArgs e)
+        private void VertScrollHandler(object sender, ScrollEventArgs e)
         {
             try
             {
@@ -1430,14 +1444,14 @@ namespace UI
                     builder_.HasSelection = false;
                 }
                 OffsetY = e.NewValue;
-                ScrollDown ();
+                ScrollDown();
             }
             catch
             {
             }
         }
         //
-        public void GotoNext ()
+        public void GotoNext()
         {
             try
             {
@@ -1453,8 +1467,8 @@ namespace UI
                         v = 0;
                     }
                     vertScroller_.Value = v;
-                    VertScrollHandler (this, new ScrollEventArgs (ScrollEventType.LargeIncrement, v));
-                    vertScroller_.Invalidate ();
+                    VertScrollHandler(this, new ScrollEventArgs(ScrollEventType.LargeIncrement, v));
+                    vertScroller_.Invalidate();
                 }
                 else
                 {
@@ -1464,8 +1478,8 @@ namespace UI
                         v = 0;
                     }
                     vertScroller_.Value = v;
-                    VertScrollHandler (this, new ScrollEventArgs (ScrollEventType.LargeIncrement, v));
-                    vertScroller_.Invalidate ();
+                    VertScrollHandler(this, new ScrollEventArgs(ScrollEventType.LargeIncrement, v));
+                    vertScroller_.Invalidate();
                 }
             }
             catch
@@ -1473,7 +1487,7 @@ namespace UI
             }
         }
         //
-        public void GotoPrev ()
+        public void GotoPrev()
         {
             try
             {
@@ -1489,8 +1503,8 @@ namespace UI
                         v = 0;
                     }
                     vertScroller_.Value = v;
-                    VertScrollHandler (this, new ScrollEventArgs (ScrollEventType.LargeDecrement, v));
-                    vertScroller_.Invalidate ();
+                    VertScrollHandler(this, new ScrollEventArgs(ScrollEventType.LargeDecrement, v));
+                    vertScroller_.Invalidate();
                 }
                 else
                 {
@@ -1500,8 +1514,8 @@ namespace UI
                         vmin = 0;
                     }
                     vertScroller_.Value = vmin;
-                    VertScrollHandler (this, new ScrollEventArgs (ScrollEventType.LargeDecrement, vmin));
-                    vertScroller_.Invalidate ();
+                    VertScrollHandler(this, new ScrollEventArgs(ScrollEventType.LargeDecrement, vmin));
+                    vertScroller_.Invalidate();
                 }
             }
             catch
@@ -1509,7 +1523,7 @@ namespace UI
             }
         }
         //
-        public void VertScroll (int nDiff)
+        public void VertScroll(int nDiff)
         {
             try
             {
@@ -1524,8 +1538,8 @@ namespace UI
                             scrllVal = 0;
                         }
                         vertScroller_.Value = scrllVal;
-                        VertScrollHandler (this, new ScrollEventArgs (ScrollEventType.ThumbPosition, scrllVal));
-                        vertScroller_.Invalidate ();
+                        VertScrollHandler(this, new ScrollEventArgs(ScrollEventType.ThumbPosition, scrllVal));
+                        vertScroller_.Invalidate();
                     }
                     else
                     {
@@ -1535,8 +1549,8 @@ namespace UI
                             scrollVal = 0;
                         }
                         vertScroller_.Value = scrollVal;
-                        VertScrollHandler (this, new ScrollEventArgs (ScrollEventType.ThumbPosition, scrollVal));
-                        vertScroller_.Invalidate ();
+                        VertScrollHandler(this, new ScrollEventArgs(ScrollEventType.ThumbPosition, scrollVal));
+                        vertScroller_.Invalidate();
                     }
                 }
                 else
@@ -1553,8 +1567,8 @@ namespace UI
                             scrollval = 0;
                         }
                         vertScroller_.Value = scrollval;
-                        VertScrollHandler (this, new ScrollEventArgs (ScrollEventType.ThumbPosition, scrollval));
-                        vertScroller_.Invalidate ();
+                        VertScrollHandler(this, new ScrollEventArgs(ScrollEventType.ThumbPosition, scrollval));
+                        vertScroller_.Invalidate();
                     }
                     else
                     {
@@ -1564,8 +1578,8 @@ namespace UI
                             scrollVal = 0;
                         }
                         vertScroller_.Value = scrollVal;
-                        VertScrollHandler (this, new ScrollEventArgs (ScrollEventType.First, scrollVal));
-                        vertScroller_.Invalidate ();
+                        VertScrollHandler(this, new ScrollEventArgs(ScrollEventType.First, scrollVal));
+                        vertScroller_.Invalidate();
                     }
                 }
             }
@@ -1574,7 +1588,7 @@ namespace UI
             }
         }
         //
-        public void HorzScroll (int nDiff)
+        public void HorzScroll(int nDiff)
         {
             try
             {
@@ -1589,8 +1603,8 @@ namespace UI
                             scroll = 0;
                         }
                         horScroller_.Value = scroll;
-                        HorzScrollHandler (this, new ScrollEventArgs (ScrollEventType.ThumbPosition, scroll));
-                        horScroller_.Invalidate ();
+                        HorzScrollHandler(this, new ScrollEventArgs(ScrollEventType.ThumbPosition, scroll));
+                        horScroller_.Invalidate();
                     }
                     else
                     {
@@ -1600,8 +1614,8 @@ namespace UI
                             scroll = 0;
                         }
                         horScroller_.Value = scroll;
-                        HorzScrollHandler (this, new ScrollEventArgs (ScrollEventType.ThumbPosition, scroll));
-                        horScroller_.Invalidate ();
+                        HorzScrollHandler(this, new ScrollEventArgs(ScrollEventType.ThumbPosition, scroll));
+                        horScroller_.Invalidate();
                     }
                 }
                 else
@@ -1618,8 +1632,8 @@ namespace UI
                             scroll = 0;
                         }
                         horScroller_.Value = scroll;
-                        HorzScrollHandler (this, new ScrollEventArgs (ScrollEventType.ThumbPosition, scroll));
-                        horScroller_.Invalidate ();
+                        HorzScrollHandler(this, new ScrollEventArgs(ScrollEventType.ThumbPosition, scroll));
+                        horScroller_.Invalidate();
                     }
                     else
                     {
@@ -1629,8 +1643,8 @@ namespace UI
                             scroll = 0;
                         }
                         horScroller_.Value = scroll;
-                        HorzScrollHandler (this, new ScrollEventArgs (ScrollEventType.First, scroll));
-                        horScroller_.Invalidate ();
+                        HorzScrollHandler(this, new ScrollEventArgs(ScrollEventType.First, scroll));
+                        horScroller_.Invalidate();
                     }
                 }
             }
@@ -1639,13 +1653,13 @@ namespace UI
             }
         }
         //
-        private bool GotoLast ()
+        private bool GotoLast()
         {
             try
             {
                 if (builder_ != null)
                 {
-                    return builder_.GotoLast ();
+                    return builder_.GotoLast();
                 }
             }
             catch
@@ -1654,13 +1668,13 @@ namespace UI
             return false;
         }
         //
-        private bool GoHome ()
+        private bool GoHome()
         {
             try
             {
                 if (builder_ != null)
                 {
-                    return builder_.GoHome ();
+                    return builder_.GoHome();
                 }
             }
             catch
@@ -1669,25 +1683,25 @@ namespace UI
             return false;
         }
         //
-        public void SelectAt (int x, int y)
+        public void SelectAt(int x, int y)
         {
             if (builder_ != null)
             {
                 builder_.HasSelection = false;
-                builder_.SelectNode ((int) ((x + OffsetX) - lMargin), (int) ((y + OffsetY) - tMargin));
-                ReRender ();
-                base.Update ();
+                builder_.SelectNode((int)((x + OffsetX) - lMargin), (int)((y + OffsetY) - tMargin));
+                ReRender();
+                base.Update();
             }
         }
         //
-        public bool SelectAll ()
+        public bool SelectAll()
         {
             try
             {
-                if (builder_.SelectAll ())
+                if (builder_.SelectAll())
                 {
                     needUpdate = true;
-                    ReRender ();
+                    ReRender();
                     return true;
                 }
             }
@@ -1697,7 +1711,7 @@ namespace UI
             return false;
         }
         //
-        private void RefreshAll ()
+        private void RefreshAll()
         {
             bool hasV = false;
             bool hasH = false;
@@ -1705,7 +1719,7 @@ namespace UI
             {
                 int diff_X = 0;
                 int diff_Y = 0;
-                if (!builder_.MoveToSelected (ref diff_X, ref diff_Y))
+                if (!builder_.MoveToSelected(ref diff_X, ref diff_Y))
                 {
                     if (diff_Y != 0)
                     {
@@ -1739,7 +1753,7 @@ namespace UI
                         catch
                         {
                         }
-                        VertScroll (diff_Y);
+                        VertScroll(diff_Y);
                         hasV = true;
                     }
                     if (diff_X != 0)
@@ -1774,12 +1788,12 @@ namespace UI
                         catch
                         {
                         }
-                        HorzScroll (diff_X);
+                        HorzScroll(diff_X);
                         hasH = true;
                     }
                     if (hasH || hasV)
                     {
-                        base.Update ();
+                        base.Update();
                     }
                 }
             }
@@ -1788,7 +1802,7 @@ namespace UI
             }
         }
         //
-        private void SetVisibleRectangle ()
+        private void SetVisibleRectangle()
         {
             if (builder_ != null)
             {
@@ -1828,20 +1842,20 @@ namespace UI
                 {
                     y = offsetY - tMargin;
                 }
-                builder_.bounds = new Rectangle (x, y, width, height);
+                builder_.bounds = new Rectangle(x, y, width, height);
             }
         }
         //
-        public void InsertMatrixDialog ()
+        public void InsertMatrixDialog()
         {
-            MatrixDialog dialog = new MatrixDialog ();
+            MatrixDialog dialog = new MatrixDialog();
             try
             {
-                dialog.ShowDialog (this);
+                dialog.ShowDialog(this);
                 if (dialog.Success)
                 {
-                    builder_.InsertMatrix (dialog.NumRows, dialog.NumCols);
-                    ReRender ();
+                    builder_.InsertMatrix(dialog.NumRows, dialog.NumCols);
+                    ReRender();
                 }
             }
             catch
@@ -1852,7 +1866,7 @@ namespace UI
             {
                 try
                 {
-                    dialog.Dispose ();
+                    dialog.Dispose();
                 }
                 catch
                 {
@@ -1860,34 +1874,34 @@ namespace UI
             }
         }
         //
-        private void InsertMatrix ()
+        private void InsertMatrix()
         {
             if (builder_.NotUberRootNode)
             {
-                InsertMatrixDialog ();
+                InsertMatrixDialog();
             }
         }
         //
-        private void UpdateMargins ()
+        private void UpdateMargins()
         {
             try
             {
-                int v = Convert.ToInt32 (FontSize * 0.27f);
-                lMargin = Math.Max (2, v);
-                tMargin = Math.Max (2, v);
-                rMargin = Math.Max (2, v);
-                bMargin = Math.Max (2, v);
+                int v = Convert.ToInt32(FontSize * 0.27f);
+                lMargin = Math.Max(2, v);
+                tMargin = Math.Max(2, v);
+                rMargin = Math.Max(2, v);
+                bMargin = Math.Max(2, v);
             }
             catch
             {
             }
         }
         //
-        private void CaretThreadProc ()
+        private void CaretThreadProc()
         {
             try
             {
-                for (;;)
+                for (; ; )
                 {
                     InvalidateMark();
                     Thread.Sleep(300);
@@ -1900,24 +1914,24 @@ namespace UI
             }
         }
         //
-        private void InvalidateMark ()
+        private void InvalidateMark()
         {
             try
             {
-                base.Invalidate (new Rectangle (markX - OffsetX, markY - OffsetY, 1, caretHeight));
+                base.Invalidate(new Rectangle(markX - OffsetX, markY - OffsetY, 1, caretHeight));
             }
             catch
             {
             }
         }
         //
-        private void InvalidateBbox ()
+        private void InvalidateBbox()
         {
             try
             {
                 if ((bbox.Right > 0) && (bbox.Bottom > 0))
                 {
-                    base.Invalidate (new Region (new Rectangle (bbox.Left, bbox.Top, bbox.Right,
+                    base.Invalidate(new Region(new Rectangle(bbox.Left, bbox.Top, bbox.Right,
                                            bbox.Bottom)));
                 }
             }
@@ -1926,19 +1940,19 @@ namespace UI
             }
         }
         //
-        private void VertGotFocusHandler (object sender, EventArgs e)
+        private void VertGotFocusHandler(object sender, EventArgs e)
         {
             base.ActiveControl = null;
-            base.Focus ();
+            base.Focus();
         }
         //
-        private void HorzGotFocusHandler (object sender, EventArgs e)
+        private void HorzGotFocusHandler(object sender, EventArgs e)
         {
             base.ActiveControl = null;
-            base.Focus ();
+            base.Focus();
         }
         //
-        private void UserPrefChanged (object sender, UserPreferenceChangedEventArgs e)
+        private void UserPrefChanged(object sender, UserPreferenceChangedEventArgs e)
         {
             if (e.Category == UserPreferenceCategory.Color)
             {
@@ -1946,7 +1960,7 @@ namespace UI
             }
         }
         //
-        private void InitializeComponent ()
+        private void InitializeComponent()
         {
             this.horScroller_ = new System.Windows.Forms.HScrollBar();
             this.vertScroller_ = new System.Windows.Forms.VScrollBar();
@@ -1995,18 +2009,18 @@ namespace UI
 
         }
         //
-        private void UndoRedoHandler (object sender, EventArgs e)
+        private void UndoRedoHandler(object sender, EventArgs e)
         {
             try
             {
-                Event_OnUndoRedoStackChanged (this, new EventArgs ());
+                Event_OnUndoRedoStackChanged(this, new EventArgs());
             }
             catch
             {
             }
         }
         //
-        public void SelectActiveMenuItems (ref bool bCopy_Active, ref bool bCut_Active, ref bool bUndo_Active, ref bool bRedo_Active,
+        public void SelectActiveMenuItems(ref bool bCopy_Active, ref bool bCut_Active, ref bool bUndo_Active, ref bool bRedo_Active,
                          ref bool bProp_Fraction_Active, ref bool bProp_Table_Active, ref bool bProp_Fenced_Active,
                          ref bool bProp_Action_Active, ref bool bStyle_Active)
         {
@@ -2021,12 +2035,12 @@ namespace UI
             bStyle_Active = false;
             try
             {
-                bCopy_Active = CopyActive ();
-                bCut_Active = CutActive ();
-                bUndo_Active = UndoActive ();
-                bRedo_Active = RedoActive ();
-                
-                Node node = builder_.GetCurrentlySelectedNode ();
+                bCopy_Active = CopyActive();
+                bCut_Active = CutActive();
+                bUndo_Active = UndoActive();
+                bRedo_Active = RedoActive();
+
+                Node node = builder_.GetCurrentlySelectedNode();
                 if ((node.type_ != null) && (node.type_.type == ElementType.Mfrac))
                 {
                     bProp_Fraction_Active = true;
@@ -2046,7 +2060,7 @@ namespace UI
                 Selection sel = null;
                 try
                 {
-                    sel = builder_.CaptureSelection ();
+                    sel = builder_.CaptureSelection();
                     if (((sel == null) || (sel.parent == null)))
                     {
                         return;
@@ -2062,31 +2076,31 @@ namespace UI
             {
             }
         }
-        
+
         //
-        public void SetSchemas (string MathMLSchema)
+        public void SetSchemas(string MathMLSchema)
         {
-            builder_.SetSchemas (MathMLSchema);
+            builder_.SetSchemas(MathMLSchema);
         }
         //
-        public void SetAntialias (bool antiAlias)
+        public void SetAntialias(bool antiAlias)
         {
             isAntiAlias = antiAlias;
         }
         //
-        public void SetFonts (FontCollection FontCollection)
+        public void SetFonts(FontCollection FontCollection)
         {
             try
             {
                 fonts_ = FontCollection;
-                builder_.setFonts (fonts_);
+                builder_.setFonts(fonts_);
             }
             catch
             {
             }
         }
         //
-        public void SetWidth (int width)
+        public void SetWidth(int width)
         {
             try
             {
@@ -2097,7 +2111,7 @@ namespace UI
             }
         }
 
-        private void OnInvalidXML (object sender, InvalidXMLArgs e)
+        private void OnInvalidXML(object sender, InvalidXMLArgs e)
         {
             try
             {
@@ -2105,10 +2119,10 @@ namespace UI
                 {
                     return;
                 }
-                
+
                 try
                 {
-                    Event_OnValidationError (this, new ValidationErrorArgs (e.Error, e.Line, e.Pos));
+                    Event_OnValidationError(this, new ValidationErrorArgs(e.Error, e.Line, e.Pos));
                 }
                 catch
                 {
@@ -2120,10 +2134,10 @@ namespace UI
             }
         }
         //
-        public void Save (string sFile)
+        public void Save(string sFile)
         {
             {
-                if (Path.GetExtension (sFile).ToUpper () == ".JPG")
+                if (Path.GetExtension(sFile).ToUpper() == ".JPG")
                 {
                     int imgBaseline = 0;
                     int imgResolution = 0;
@@ -2138,44 +2152,44 @@ namespace UI
                     catch
                     {
                     }
-                    SaveAsJPEG (sFile, FontSize, imgResolution, ref imgBaseline);
+                    SaveAsJPEG(sFile, FontSize, imgResolution, ref imgBaseline);
                     return;
                 }
                 if ((builder_ != null) && (sFile.Length > 0))
                 {
-                    builder_.Save (sFile);
+                    builder_.Save(sFile);
                 }
             }
-            base.Focus ();
+            base.Focus();
         }
         public void SavePure(string file)
         {
             if ((builder_ != null) && (file.Length > 0))
             {
-            builder_.SavePure (file);
+                builder_.SavePure(file);
             }
-            base.Focus ();
+            base.Focus();
         }
         //
-        public void LoadXML (string sXML)
+        public void LoadXML(string sXML)
         {
             if ((sXML != null) && (sXML.Length > 0))
             {
-                if (builder_.Validate (sXML))
+                if (builder_.Validate(sXML))
                 {
                     OffsetX = 0;
                     OffsetY = 0;
-                    
-                    builder_.clear ();
-                    builder_.LoadXML (sXML);
+
+                    builder_.clear();
+                    builder_.LoadXML(sXML);
                 }
             }
             builder_.CanUndo = false;
-            ReRender ();
-            base.Focus ();
+            ReRender();
+            base.Focus();
         }
         //
-        public void LoadXML (string sXML, string fileName, bool bValidated)
+        public void LoadXML(string sXML, string fileName, bool bValidated)
         {
             bool ok = false;
             if (bValidated)
@@ -2184,31 +2198,31 @@ namespace UI
             }
             else
             {
-                ok = builder_.IsValidXML (sXML);
+                ok = builder_.IsValidXML(sXML);
             }
             if (ok)
             {
                 OffsetX = 0;
                 OffsetY = 0;
                 vertScroller_.Value = 0;
-                vertScroller_.Invalidate ();
+                vertScroller_.Invalidate();
                 horScroller_.Value = 0;
-                horScroller_.Invalidate ();
-                
-                builder_.clear ();
-                builder_.LoadXML (sXML);
+                horScroller_.Invalidate();
+
+                builder_.clear();
+                builder_.LoadXML(sXML);
                 builder_.CanUndo = false;
-                ReRender ();
-                base.Focus ();
+                ReRender();
+                base.Focus();
             }
         }
 
         //
-        public Bitmap Export2Image (PixelFormat pixelFormat, float fontSize, int nResolution, ref int ImgBaseLine)
+        public Bitmap Export2Image(PixelFormat pixelFormat, float fontSize, int nResolution, ref int ImgBaseLine)
         {
             try
             {
-                return builder_.Export2Image (pixelFormat, fontSize, nResolution, true, ref ImgBaseLine);
+                return builder_.Export2Image(pixelFormat, fontSize, nResolution, true, ref ImgBaseLine);
             }
             catch
             {
@@ -2216,7 +2230,7 @@ namespace UI
             }
         }
         //
-        public bool SaveAsJPEG (string fileName, float fontSize, int ImgResolution, ref int ImgBaseline)
+        public bool SaveAsJPEG(string fileName, float fontSize, int ImgResolution, ref int ImgBaseline)
         {
             bool ok = false;
             try
@@ -2228,51 +2242,51 @@ namespace UI
                 {
                     return false;
                 }
-                directoryName = Path.GetDirectoryName (fileName);
-                if (!Directory.Exists (directoryName))
+                directoryName = Path.GetDirectoryName(fileName);
+                if (!Directory.Exists(directoryName))
                 {
                     return false;
                 }
-                withoutExtension = Path.GetFileNameWithoutExtension (fileName);
+                withoutExtension = Path.GetFileNameWithoutExtension(fileName);
                 if (withoutExtension.Length == 0)
                 {
                     return false;
                 }
-                extension = Path.GetExtension (fileName);
+                extension = Path.GetExtension(fileName);
                 if ((extension.Length > 0) && (extension[0] == '.'))
                 {
-                    extension = extension.Substring (1, extension.Length - 1);
+                    extension = extension.Substring(1, extension.Length - 1);
                 }
-                if (extension.ToUpper () != "JPG")
+                if (extension.ToUpper() != "JPG")
                 {
                     extension = "jpg";
                 }
-                fileName = string.Concat (new string[] {directoryName, @"\", withoutExtension, ".", extension});
-                Bitmap bitmap = builder_.Export2Image (PixelFormat.Format24bppRgb, fontSize, ImgResolution, true, ref ImgBaseline);
+                fileName = string.Concat(new string[] { directoryName, @"\", withoutExtension, ".", extension });
+                Bitmap bitmap = builder_.Export2Image(PixelFormat.Format24bppRgb, fontSize, ImgResolution, true, ref ImgBaseline);
                 if (bitmap != null)
                 {
-                    bitmap.Save (fileName, ImageFormat.Jpeg);
+                    bitmap.Save(fileName, ImageFormat.Jpeg);
                     ok = true;
                     ImageRes = ImgResolution;
                 }
                 if (ok)
                 {
-                    CommentIO io = new CommentIO ();
-                    if (io.NotEmpty (fileName))
+                    CommentIO io = new CommentIO();
+                    if (io.NotEmpty(fileName))
                     {
                         string xml = "";
-                        
+
                         try
                         {
-                            xml = builder_.SaveToXML ();
+                            xml = builder_.SaveToXML();
                         }
                         catch
                         {
                         }
-                        
+
                         if ((xml != null) && (xml.Length > 0))
                         {
-                            io.Save (xml);
+                            io.Save(xml);
 
                             return true;
                         }
@@ -2286,30 +2300,30 @@ namespace UI
             return false;
         }
         //
-        public void InsertEntity_Open_IdentifierDictionary_Dialog (bool bIdentifier)
+        public void InsertEntity_Open_IdentifierDictionary_Dialog(bool bIdentifier)
         {
-            IdentifierDictionaryDialog dialog = new IdentifierDictionaryDialog (entityManager, fonts_, bIdentifier);
+            IdentifierDictionaryDialog dialog = new IdentifierDictionaryDialog(entityManager, fonts_, bIdentifier);
             try
             {
-                dialog.ShowDialog (this);
+                dialog.ShowDialog(this);
                 if (!dialog.Success)
                 {
                     return;
                 }
-                Glyph entity = dialog.GetGlyph ();
+                Glyph entity = dialog.GetGlyph();
                 if (entity == null)
                 {
                     return;
                 }
                 if (dialog.IsID)
                 {
-                    InsertIdentifier (entity, dialog.IsItalic, dialog.IsBold);
+                    InsertIdentifier(entity, dialog.IsItalic, dialog.IsBold);
                 }
                 else
                 {
-                    InsertGlyph (entity);
+                    InsertGlyph(entity);
                 }
-                ReRender ();
+                ReRender();
             }
             catch
             {
@@ -2319,7 +2333,7 @@ namespace UI
             {
                 try
                 {
-                    dialog.Dispose ();
+                    dialog.Dispose();
                 }
                 catch
                 {
@@ -2327,9 +2341,9 @@ namespace UI
             }
         }
         //
-        public void StyleProperties ()
+        public void StyleProperties()
         {
-            Node cur = builder_.GetCurrentlySelectedNode ();
+            Node cur = builder_.GetCurrentlySelectedNode();
             try
             {
                 if (((cur == null) || (cur.type_ == null)))
@@ -2340,17 +2354,17 @@ namespace UI
                 StyleAttributes style = null;
                 if (builder_.HasSelection)
                 {
-                    style = builder_.GetSelectionStyle ();
+                    style = builder_.GetSelectionStyle();
                     ok = true;
                 }
                 else if ((((cur != null) && (cur.InternalMark == 0)) &&
                           ((cur.type_ != null))) &&
                          (cur.type_.type != ElementType.Math))
                 {
-                    style = new StyleAttributes ();
+                    style = new StyleAttributes();
                     if (cur.style_ != null)
                     {
-                        cur.style_.CopyTo (style);
+                        cur.style_.CopyTo(style);
                     }
                     ok = true;
                 }
@@ -2358,14 +2372,14 @@ namespace UI
                 {
                     return;
                 }
-                StylePropertiesDialog dialog = new StylePropertiesDialog (style, cur.parent_);
+                StylePropertiesDialog dialog = new StylePropertiesDialog(style, cur.parent_);
                 try
                 {
-                    dialog.ShowDialog (this);
+                    dialog.ShowDialog(this);
                     if (dialog.Success)
                     {
-                        builder_.ApplyStyleToSelection (dialog.Style);
-                        ReRender ();
+                        builder_.ApplyStyleToSelection(dialog.Style);
+                        ReRender();
                     }
                 }
                 catch
@@ -2376,7 +2390,7 @@ namespace UI
                 {
                     try
                     {
-                        dialog.Dispose ();
+                        dialog.Dispose();
                     }
                     catch
                     {
@@ -2388,47 +2402,47 @@ namespace UI
             }
         }
         //
-        public void ShowPropertiesDialog ()
+        public void ShowPropertiesDialog()
         {
-            Node node = builder_.GetCurrentlySelectedNode ();
+            Node node = builder_.GetCurrentlySelectedNode();
             if ((node != null) && (node.type_ != null))
             {
                 if (node.type_.type == ElementType.Mfrac)
                 {
-                    FractionProperties ();
+                    FractionProperties();
                 }
                 else if (node.type_.type == ElementType.Mtable)
                 {
-                    MatrixProperties ();
+                    MatrixProperties();
                 }
                 else if (node.type_.type == ElementType.Mfenced)
                 {
-                    FencedProperties ();
+                    FencedProperties();
                 }
                 else if (node.type_.type == ElementType.Maction)
                 {
-                    ActionProperties ();
+                    ActionProperties();
                 }
                 else if (node.type_.type == ElementType.Mstyle)
                 {
-                    StyleProperties ();
+                    StyleProperties();
                 }
             }
         }
         //
-        public void MatrixProperties ()
+        public void MatrixProperties()
         {
-            Node cur = builder_.GetCurrentlySelectedNode ();
+            Node cur = builder_.GetCurrentlySelectedNode();
             if (((cur != null) && (cur.type_ != null)) && (cur.type_.type == ElementType.Mtable))
             {
-                MatrixPropertiesDialog dialog = new MatrixPropertiesDialog ();
+                MatrixPropertiesDialog dialog = new MatrixPropertiesDialog();
                 try
                 {
-                    dialog.SetTarget (cur);
-                    dialog.ShowDialog (this);
-                    if (dialog.Success && builder_.ApplyMatrixProperties (dialog.matrix))
+                    dialog.SetTarget(cur);
+                    dialog.ShowDialog(this);
+                    if (dialog.Success && builder_.ApplyMatrixProperties(dialog.matrix))
                     {
-                        ReRender ();
+                        ReRender();
                     }
                 }
                 catch
@@ -2439,7 +2453,7 @@ namespace UI
                 {
                     try
                     {
-                        dialog.Dispose ();
+                        dialog.Dispose();
                     }
                     catch
                     {
@@ -2448,18 +2462,18 @@ namespace UI
             }
         }
         //
-        public void FencedProperties ()
+        public void FencedProperties()
         {
-            Node cur = builder_.GetCurrentlySelectedNode ();
+            Node cur = builder_.GetCurrentlySelectedNode();
             if (((cur != null) && (cur.type_ != null)) && (cur.type_.type == ElementType.Mfenced))
             {
-                FencedDialog dialog = new FencedDialog (cur);
+                FencedDialog dialog = new FencedDialog(cur);
                 try
                 {
-                    dialog.ShowDialog (this);
-                    if ((dialog.Success && (dialog.FencedAttrs != null)) && builder_.ApplyFencedAttributes (cur, dialog.FencedAttrs))
+                    dialog.ShowDialog(this);
+                    if ((dialog.Success && (dialog.FencedAttrs != null)) && builder_.ApplyFencedAttributes(cur, dialog.FencedAttrs))
                     {
-                        ReRender ();
+                        ReRender();
                     }
                 }
                 catch
@@ -2470,7 +2484,7 @@ namespace UI
                 {
                     try
                     {
-                        dialog.Dispose ();
+                        dialog.Dispose();
                     }
                     catch
                     {
@@ -2479,18 +2493,18 @@ namespace UI
             }
         }
         //
-        public void ActionProperties ()
+        public void ActionProperties()
         {
-            Node cur = builder_.GetCurrentlySelectedNode ();
+            Node cur = builder_.GetCurrentlySelectedNode();
             if (((cur != null) && (cur.type_ != null)) && (cur.type_.type == ElementType.Maction))
             {
-                MActionDialog dialog = new MActionDialog (cur);
+                MActionDialog dialog = new MActionDialog(cur);
                 try
                 {
-                    dialog.ShowDialog (this);
-                    if (dialog.Success && builder_.ApplyActionAttrs (cur, dialog.attributes, dialog.Statusline))
+                    dialog.ShowDialog(this);
+                    if (dialog.Success && builder_.ApplyActionAttrs(cur, dialog.attributes, dialog.Statusline))
                     {
-                        ReRender ();
+                        ReRender();
                     }
                 }
                 catch
@@ -2501,7 +2515,7 @@ namespace UI
                 {
                     try
                     {
-                        dialog.Dispose ();
+                        dialog.Dispose();
                     }
                     catch
                     {
@@ -2510,18 +2524,18 @@ namespace UI
             }
         }
         //
-        public void FractionProperties ()
+        public void FractionProperties()
         {
-            Node cur = builder_.GetCurrentlySelectedNode ();
+            Node cur = builder_.GetCurrentlySelectedNode();
             if (((cur != null) && (cur.type_ != null)) && (cur.type_.type == ElementType.Mfrac))
             {
-                FractionsPropertiesDialog dialog = new FractionsPropertiesDialog (cur);
+                FractionsPropertiesDialog dialog = new FractionsPropertiesDialog(cur);
                 try
                 {
-                    dialog.ShowDialog (this);
-                    if ((dialog.Success && (dialog.FractionAttrs != null)) && builder_.ApplyFractionAttrs (cur, dialog.FractionAttrs))
+                    dialog.ShowDialog(this);
+                    if ((dialog.Success && (dialog.FractionAttrs != null)) && builder_.ApplyFractionAttrs(cur, dialog.FractionAttrs))
                     {
-                        ReRender ();
+                        ReRender();
                     }
                 }
                 catch
@@ -2532,7 +2546,7 @@ namespace UI
                 {
                     try
                     {
-                        dialog.Dispose ();
+                        dialog.Dispose();
                     }
                     catch
                     {
@@ -2541,74 +2555,74 @@ namespace UI
             }
         }
         //
-        public void InsertGlyph (Glyph entity)
+        public void InsertGlyph(Glyph entity)
         {
             if (builder_ != null)
             {
-                builder_.InsertEntityOperator (entity);
-                ReRender ();
+                builder_.InsertEntityOperator(entity);
+                ReRender();
             }
-            base.Focus ();
+            base.Focus();
         }
         //
-        public void InsertEntity_Operator (string entityName)
+        public void InsertEntity_Operator(string content, bool insertByName)
         {
             if (builder_ != null)
             {
-                builder_.InsertEntityOperator (entityName);
-                ReRender ();
+                builder_.InsertEntityOperator(content, insertByName);
+                ReRender();
             }
-            base.Focus ();
+            base.Focus();
         }
         //
-        public void InsertStretchyArrow_Under (string entityName)
+        public void InsertStretchyArrow_Under(string entityName)
         {
             if (builder_ != null)
             {
-                builder_.InsertStretchyArrow_Under (entityName);
-                ReRender ();
+                builder_.InsertStretchyArrow_Under(entityName);
+                ReRender();
             }
-            base.Focus ();
+            base.Focus();
         }
         //
-        public void InsertStretchyArrow_Over (string entityName)
+        public void InsertStretchyArrow_Over(string entityName)
         {
             if (builder_ != null)
             {
-                builder_.InsertStretchyArrow_Over (entityName);
-                ReRender ();
+                builder_.InsertStretchyArrow_Over(entityName);
+                ReRender();
             }
-            base.Focus ();
+            base.Focus();
         }
         //
-        public void InsertStretchyArrow_UnderOver (string entityName)
+        public void InsertStretchyArrow_UnderOver(string entityName)
         {
             if (builder_ != null)
             {
-                builder_.InsertStretchyArrow_UnderOver (entityName);
-                ReRender ();
+                builder_.InsertStretchyArrow_UnderOver(entityName);
+                ReRender();
             }
-            base.Focus ();
+            base.Focus();
         }
         //
-        public void InsertIdentifier (Glyph entity, bool bItalic, bool bBold)
+        public void InsertIdentifier(Glyph entity, bool bItalic, bool bBold)
         {
             if (builder_ != null)
             {
-                builder_.insertEntity_Identifier (entity, bItalic, bBold);
-                ReRender ();
+                builder_.insertEntity_Identifier(entity, bItalic, bBold);
+                ReRender();
             }
-            base.Focus ();
+            base.Focus();
         }
         //
-        public void InsertEntity_Identifier (string entityName, bool bItalic, bool bBold)
+        public void InsertEntity_Identifier(string entityName, bool bItalic, bool bBold)
         {
             if (builder_ != null)
             {
-                builder_.insertEntity_Identifier (entityName, bItalic, bBold);
-                ReRender ();
+                builder_.insertEntity_Identifier(entityName, bItalic, bBold);
+                ReRender();
             }
-            base.Focus ();
+            base.Focus();
         }
         //
         public int OffsetY
@@ -2617,11 +2631,11 @@ namespace UI
             set
             {
                 offsetY = value;
-                SetVisibleRectangle ();
-                ReRender ();
+                SetVisibleRectangle();
+                ReRender();
             }
         }
-        
+
         //
         public int ImageRes
         {
@@ -2690,14 +2704,14 @@ namespace UI
                     }
                     try
                     {
-                        UpdateMargins ();
+                        UpdateMargins();
                     }
                     catch
                     {
                     }
                     if (isInitialized_)
                     {
-                        RenderWithNewFont ();
+                        RenderWithNewFont();
                     }
                 }
                 catch
@@ -2740,9 +2754,9 @@ namespace UI
                 if (value != offsetX)
                 {
                     offsetX = value;
-                    SetVisibleRectangle ();
-                    horScroller_.Invalidate ();
-                    ReRender ();
+                    SetVisibleRectangle();
+                    horScroller_.Invalidate();
+                    ReRender();
                 }
             }
         }

@@ -1,6 +1,6 @@
 namespace Genetibase.MathX
 {
-	using Genetibase.ApplicationBlocks;
+    using Genetibase.ApplicationBlocks;
     using Nodes;
     using Fonts;
     using UI;
@@ -36,18 +36,18 @@ namespace Genetibase.MathX
             this.backgroundColor_ = Color.White;
             this.fontCollection = null;
             this.entityManager = null;
-            
-            
+
+
             this.InitializeComponent();
-            
+
             FontsProvider fontsProvider = new FontsProvider();
             this.fontCollection = fontsProvider.LoadAll();
             this.entityManager = new EntityManager(this.fontCollection);
-            
-            
+
+
             this.uiMenu = new ControlWithMenu(this.entityManager, this.fontCollection);
             this.uiMenu.AllowDrop = true;
-            
+
             this.uiMenu.BackColor = Color.White;
             this.uiMenu.Dock = DockStyle.Fill;
 
@@ -57,15 +57,15 @@ namespace Genetibase.MathX
             this.uiMenu.OffsetY = 0;
             this.uiMenu.Size = new Size(0x256, 0xe2);
             this.uiMenu.TabIndex = 0;
-           
+
             base.Controls.Add(this.uiMenu);
             this.uiMenu.SetBounds(0, 0, base.Size.Width, base.Size.Height);
             this.uiMenu.DoResize(base.Size.Width, base.Size.Height, true, false);
             this.ResetWidth();
-            
+
             this.uiMenu.Event_OnUndoRedoStackChanged += new EventHandler(this.OnUndoRedo);
             this.uiMenu.Event_OnValidationError += new ValidationHandler(this.OnValidationErrorHandler);
-            
+
             this.uiMenu.Event_MouseDown += new MouseEventHandler(this.OnMouseDownHandler);
             this.uiMenu.Event_OnGotFocus += new EventHandler(this.OnGotFocusHandler);
             this.uiMenu.Event_OnLostFocus += new EventHandler(this.OnLostFocusHandler);
@@ -124,7 +124,7 @@ namespace Genetibase.MathX
             }
             catch
             {
-				return flag1;
+                return flag1;
             }
         }
 
@@ -141,7 +141,7 @@ namespace Genetibase.MathX
             }
             catch
             {
-				return false;
+                return false;
             }
         }
 
@@ -158,7 +158,7 @@ namespace Genetibase.MathX
             }
             catch
             {
-				return null;
+                return null;
             }
         }
 
@@ -211,9 +211,9 @@ namespace Genetibase.MathX
             this.uiMenu.InsertEntity_Open_IdentifierDictionary_Dialog(false);
         }
 
-        public void pub_InsertEntity_Operator(string entityName)
+        public void pub_InsertEntity_Operator(string content, bool insertByName)
         {
-            this.uiMenu.InsertEntity_Operator(entityName);
+            this.uiMenu.InsertEntity_Operator(content, insertByName);
         }
 
         public void pub_InsertFenced()
@@ -331,11 +331,11 @@ namespace Genetibase.MathX
         {
             try
             {
-            StreamReader reader = new StreamReader(filename);
-            string xml = reader.ReadToEnd();
-            reader.Close();
+                StreamReader reader = new StreamReader(filename);
+                string xml = reader.ReadToEnd();
+                reader.Close();
 
-            return pub_LoadXML(xml);
+                return pub_LoadXML(xml);
             }
             catch
             {
@@ -375,7 +375,7 @@ namespace Genetibase.MathX
             }
             catch
             {
-				return false;
+                return false;
             }
         }
 
@@ -405,14 +405,14 @@ namespace Genetibase.MathX
             }
         }
 
-		public void pub_Export()
-		{
-			using (NuGenImageExportForm imageExportForm = new NuGenImageExportForm())
-			{
-				int i = 0;
-				imageExportForm.ShowDialog(this.uiMenu.Export2Image(PixelFormat.Format24bppRgb, 12, 300, ref i));
-			}
-		}
+        public void pub_Export()
+        {
+            using (NuGenImageExportForm imageExportForm = new NuGenImageExportForm())
+            {
+                int i = 0;
+                imageExportForm.ShowDialog(this.uiMenu.Export2Image(PixelFormat.Format24bppRgb, 12, 300, ref i));
+            }
+        }
 
         public bool pub_SaveAsJPEG(string fileName, float fontSize, int ImgResolution, ref int ImgBaseline)
         {
@@ -494,7 +494,7 @@ namespace Genetibase.MathX
             catch
             {
             }
-         }
+        }
 
         public void pub_ShowPropertiesDialog()
         {
@@ -520,8 +520,13 @@ namespace Genetibase.MathX
             }
             catch
             {
-				return flag1;
+                return flag1;
             }
+        }
+
+        public void pub_InsertChar(char c)
+        {
+            this.uiMenu.pub_InsertChar(c);
         }
 
         private void ResetWidth()
@@ -780,7 +785,7 @@ namespace Genetibase.MathX
                 }
                 catch
                 {
-					return 12f;
+                    return 12f;
                 }
             }
             set

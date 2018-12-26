@@ -8,7 +8,7 @@ namespace Facade
     using Nodes;
     using MathTable;
     using Operators;
-    
+
     using Fonts;
     using System;
     using System.Collections;
@@ -30,12 +30,12 @@ namespace Facade
         public event InsertionHappenned InsertHappened;
 
         //
-        public NodesBuilder (int width, OperatorDictionary operatorDictionary)
+        public NodesBuilder(int width, OperatorDictionary operatorDictionary)
         {
             this.fonts_ = null;
             this.mathmlSchema = "";
             this.mathmlNamespace = "http://www.w3.org/1998/Math/MathML";
-            
+
             this.painter_ = null;
             this.currentCaret = 0;
             this.horizontalRes = 0;
@@ -45,30 +45,30 @@ namespace Facade
             this.fontSize = 12f;
             this.operators_ = null;
             this.schema = null;
-            this.undo = new UndoRedoStack ();
-            this.redo = new UndoRedoStack ();
+            this.undo = new UndoRedoStack();
+            this.redo = new UndoRedoStack();
             this.stretchyBrackets = true;
-            
+
             this.operators_ = operatorDictionary;
             if (this.operators_ == null)
             {
-                this.operators_ = new OperatorDictionary ();
+                this.operators_ = new OperatorDictionary();
             }
             this.undo.callback =
-                (EventHandler) Delegate.Combine (this.undo.callback, new EventHandler (this.UndoCallback));
+                (EventHandler)Delegate.Combine(this.undo.callback, new EventHandler(this.UndoCallback));
             this.redo.callback =
-                (EventHandler) Delegate.Combine (this.redo.callback, new EventHandler (this.RedoCallback));
-            this.clientRect = new Rectangle (0, 0, 0, 0);
-            this.painter_ = new Painter ();
-            this.painter_.SetFontSize (this.FontSize);
+                (EventHandler)Delegate.Combine(this.redo.callback, new EventHandler(this.RedoCallback));
+            this.clientRect = new Rectangle(0, 0, 0, 0);
+            this.painter_ = new Painter();
+            this.painter_.SetFontSize(this.FontSize);
             if (this.operators_ != null)
             {
-                this.painter_.SetOperators (this.operators_);
+                this.painter_.SetOperators(this.operators_);
             }
             this.Width = width;
         }
         //
-        private Node getSelectedOrRootIfEmpty ()
+        private Node getSelectedOrRootIfEmpty()
         {
             try
             {
@@ -76,7 +76,7 @@ namespace Facade
                 {
                     try
                     {
-                        this.selectedNode = this.GetRootNode ();
+                        this.selectedNode = this.GetRootNode();
                     }
                     catch
                     {
@@ -89,7 +89,7 @@ namespace Facade
             return this.selectedNode;
         }
         //
-        public Node GetCurrentlySelectedNode ()
+        public Node GetCurrentlySelectedNode()
         {
             try
             {
@@ -97,7 +97,7 @@ namespace Facade
                 {
                     try
                     {
-                        this.selectedNode = this.GetRootNode ();
+                        this.selectedNode = this.GetRootNode();
                     }
                     catch
                     {
@@ -113,7 +113,7 @@ namespace Facade
                         {
                             if (this.selectedNode.type_.type == ElementType.Ms)
                             {
-                                leftQuoteWidth += ((Box_Ms) this.selectedNode.box).leftQuoteWidth;
+                                leftQuoteWidth += ((Box_Ms)this.selectedNode.box).leftQuoteWidth;
                             }
                         }
                         catch
@@ -125,13 +125,13 @@ namespace Facade
                         {
                             this.selectedNode.InternalMark = 0;
                             this.selectedNode.LiteralStart = 0;
-                            return this.getSelectedOrRootIfEmpty ();
+                            return this.getSelectedOrRootIfEmpty();
                         }
                         if (this.selectedNode.literalText.Length == 1)
                         {
                             int w =
-                                this.painter_.MeasureWidth (this.selectedNode, styleAttributes,
-                                                       this.selectedNode.literalText.Substring (0, 1));
+                                this.painter_.MeasureWidth(this.selectedNode, styleAttributes,
+                                                       this.selectedNode.literalText.Substring(0, 1));
                             if (leftQuoteWidth > (w / 2))
                             {
                                 this.selectedNode.InternalMark = 1;
@@ -142,18 +142,18 @@ namespace Facade
                                 this.selectedNode.InternalMark = 0;
                                 this.selectedNode.LiteralStart = 0;
                             }
-                            return this.getSelectedOrRootIfEmpty ();
+                            return this.getSelectedOrRootIfEmpty();
                         }
                         int lastw = 0;
                         int ww = 0;
                         for (int i = 1; i <= this.selectedNode.literalText.Length; i++)
                         {
                             ww =
-                                this.painter_.MeasureWidth (this.selectedNode, styleAttributes,
-                                                       this.selectedNode.literalText.Substring (0, i));
+                                this.painter_.MeasureWidth(this.selectedNode, styleAttributes,
+                                                       this.selectedNode.literalText.Substring(0, i));
                             if (ww == 0)
                             {
-                                return this.getSelectedOrRootIfEmpty ();
+                                return this.getSelectedOrRootIfEmpty();
                             }
                             end = this.selectedNode.box.X + ww;
                             if ((start < (this.selectedNode.box.X + leftQuoteWidth)) &&
@@ -171,7 +171,7 @@ namespace Facade
                                     this.selectedNode.InternalMark = i - 1;
                                     this.selectedNode.LiteralStart = start - this.selectedNode.box.X;
                                 }
-                                return this.getSelectedOrRootIfEmpty ();
+                                return this.getSelectedOrRootIfEmpty();
                             }
                             start = end;
                             lastw = ww;
@@ -183,40 +183,40 @@ namespace Facade
                         {
                             if (this.selectedNode.literalText.Length > 0)
                             {
-                                this.selectedNode.LiteralStart = this.painter_.MeasureWidth (this.selectedNode, styleAttributes,
-                                                                                             this.selectedNode.literalText.Substring (0, this.selectedNode.InternalMark));
+                                this.selectedNode.LiteralStart = this.painter_.MeasureWidth(this.selectedNode, styleAttributes,
+                                                                                             this.selectedNode.literalText.Substring(0, this.selectedNode.InternalMark));
                             }
                             else
                             {
                                 this.selectedNode.LiteralStart = 0;
                             }
                         }
-                        return this.getSelectedOrRootIfEmpty ();
+                        return this.getSelectedOrRootIfEmpty();
                     }
                 }
             }
             catch
             {
             }
-            return this.getSelectedOrRootIfEmpty ();
+            return this.getSelectedOrRootIfEmpty();
         }
         //
-        public Node MultiSelectNode ()
+        public Node MultiSelectNode()
         {
             return this.multiSelectNode;
         }
         //
-        public int CurrentCaret ()
+        public int CurrentCaret()
         {
             return this.currentCaret;
         }
         //
-        public Selection CaptureSelection (Node from, int fromCaret, Node to, int toCaret, bool needSwap)
+        public Selection CaptureSelection(Node from, int fromCaret, Node to, int toCaret, bool needSwap)
         {
-            Selection r = new Selection ();
+            Selection r = new Selection();
             r.swap = needSwap;
             r.parent = from.parent_;
-            
+
             Node cur = from;
             bool done = false;
             while ((cur != null) && !done)
@@ -246,7 +246,7 @@ namespace Facade
                             {
                                 r.caret = curCaret;
                                 r.literalLength = len;
-                                r.Add (cur);
+                                r.Add(cur);
                             }
                         }
                         else if (cur == from)
@@ -257,7 +257,7 @@ namespace Facade
                                 curCaret = 0;
                             }
                             r.caret = curCaret;
-                            r.Add (cur);
+                            r.Add(cur);
                         }
                         else if (cur == to)
                         {
@@ -267,7 +267,7 @@ namespace Facade
                                 len = cur.LiteralLength;
                             }
                             r.literalLength = len;
-                            r.Add (cur);
+                            r.Add(cur);
                         }
                     }
                 }
@@ -294,21 +294,21 @@ namespace Facade
                     {
                         r.caret = curCaret;
                         r.literalLength = len;
-                        r.Add (cur);
+                        r.Add(cur);
                     }
                 }
                 else
                 {
                     if (cur != to)
                     {
-                        r.Add (cur);
+                        r.Add(cur);
                     }
                     if (cur == to)
                     {
                         if (toCaret == cur.LiteralLength)
                         {
                             r.literalLength = cur.LiteralLength;
-                            r.Add (cur);
+                            r.Add(cur);
                             if (cur == from)
                             {
                                 r.caret = 0;
@@ -335,7 +335,7 @@ namespace Facade
             return r;
         }
         //
-        public Selection CaptureSelection ()
+        public Selection CaptureSelection()
         {
             Selection r = null;
             try
@@ -344,10 +344,10 @@ namespace Facade
                 {
                     return r;
                 }
-                Node start = this.GetCurrentlySelectedNode ();
-                Node end = this.MultiSelectNode ();
-                Node first = this.GetCurrentlySelectedNode ();
-                Node last = this.MultiSelectNode ();
+                Node start = this.GetCurrentlySelectedNode();
+                Node end = this.MultiSelectNode();
+                Node first = this.GetCurrentlySelectedNode();
+                Node last = this.MultiSelectNode();
                 if (((first.parent_ == null) || (last.parent_ == null)) || (first.parent_ != last.parent_))
                 {
                     return r;
@@ -364,11 +364,11 @@ namespace Facade
                         last = start;
                         firstMark = this.currentCaret;
                         secondMark = last.InternalMark;
-                        return this.CaptureSelection (first, firstMark, last, secondMark, true);
+                        return this.CaptureSelection(first, firstMark, last, secondMark, true);
                     }
                     firstMark = first.InternalMark;
                     secondMark = this.currentCaret;
-                    return this.CaptureSelection (first, firstMark, last, secondMark, false);
+                    return this.CaptureSelection(first, firstMark, last, secondMark, false);
                 }
                 if (first.childIndex > last.childIndex)
                 {
@@ -376,11 +376,11 @@ namespace Facade
                     last = start;
                     firstMark = this.currentCaret;
                     secondMark = last.InternalMark;
-                    return this.CaptureSelection (first, firstMark, last, secondMark, true);
+                    return this.CaptureSelection(first, firstMark, last, secondMark, true);
                 }
                 firstMark = first.InternalMark;
                 secondMark = this.currentCaret;
-                return this.CaptureSelection (first, firstMark, last, secondMark, false);
+                return this.CaptureSelection(first, firstMark, last, secondMark, false);
             }
             catch
             {
@@ -388,21 +388,21 @@ namespace Facade
             }
         }
         //
-        private void ClearSelection ()
+        private void ClearSelection()
         {
             this.HasSelection = false;
         }
         //
-        public bool GotoLast ()
+        public bool GotoLast()
         {
-            this.ClearSelection ();
+            this.ClearSelection();
             Node last = null;
             Node cur = null;
             try
             {
                 if (this.selectedNode != null)
                 {
-                    cur = this.GetCurrentlySelectedNode ();
+                    cur = this.GetCurrentlySelectedNode();
                     if ((cur != null))
                     {
                         bool isMulti = false;
@@ -434,7 +434,7 @@ namespace Facade
                                 {
                                     return false;
                                 }
-                                this.SelectNode (last, true);
+                                this.SelectNode(last, true);
                                 return true;
                             }
                             last = this.rootNode_.lastChild;
@@ -442,7 +442,7 @@ namespace Facade
                                 (((last.type_.type != ElementType.Mtable) || (last.level != 1)) ||
                                  (last.Class != "nugentoplevel")))
                             {
-                                this.SelectNode (last, true);
+                                this.SelectNode(last, true);
                                 return true;
                             }
                         }
@@ -452,21 +452,21 @@ namespace Facade
             catch
             {
             }
-            
+
             return false;
         }
         //
-        public bool GoHome ()
+        public bool GoHome()
         {
-            this.ClearSelection ();
+            this.ClearSelection();
             Node selectedNode = null;
             Node firstChild = null;
             try
             {
-                
+
                 if (this.selectedNode != null)
                 {
-                    selectedNode = this.GetCurrentlySelectedNode ();
+                    selectedNode = this.GetCurrentlySelectedNode();
                     if ((selectedNode != null))
                     {
                         bool isMultiline = false;
@@ -498,7 +498,7 @@ namespace Facade
                                 {
                                     return false;
                                 }
-                                this.SelectNode (firstChild, false);
+                                this.SelectNode(firstChild, false);
                                 return true;
                             }
                             else
@@ -522,9 +522,9 @@ namespace Facade
             return false;
         }
         //
-        public bool WordRight ()
+        public bool WordRight()
         {
-            this.ClearSelection ();
+            this.ClearSelection();
             try
             {
                 Node cur = this.GetCurrentlySelectedNode();
@@ -650,9 +650,9 @@ namespace Facade
             return true;
         }
         //
-        public bool WordLeft ()
+        public bool WordLeft()
         {
-            this.ClearSelection ();
+            this.ClearSelection();
             try
             {
                 Node cur = this.GetCurrentlySelectedNode();
@@ -753,20 +753,20 @@ namespace Facade
             catch
             {
             }
-            
+
             return false;
         }
         //
-        public bool GoLeft ()
+        public bool GoLeft()
         {
-            return this.GoLeft (false);
+            return this.GoLeft(false);
         }
         //
-        public bool GoLeft (bool interactive)
+        public bool GoLeft(bool interactive)
         {
             if (interactive)
             {
-                this.ClearSelection ();
+                this.ClearSelection();
             }
             try
             {
@@ -776,7 +776,7 @@ namespace Facade
                     {
                         if ((
                              ((this.selectedNode.literalText == null) || (this.selectedNode.literalText.Length == 0))) &&
-                            ((this.selectedNode.HasChildren () && !this.selectedNode.firstChild.isGlyph) &&
+                            ((this.selectedNode.HasChildren() && !this.selectedNode.firstChild.isGlyph) &&
                              (this.selectedNode.firstChild.type_.type != ElementType.Entity)))
                         {
                             Node cur = null;
@@ -809,27 +809,27 @@ namespace Facade
                             }
                             if (valid)
                             {
-                                if ((cur.parent_ != null) && this.IsClosingBracket (cur))
+                                if ((cur.parent_ != null) && this.IsClosingBracket(cur))
                                 {
                                     if ((cur.prevSibling != null) && (cur.prevSibling.prevSibling != null))
                                     {
-                                        this.SelectNode (cur.prevSibling, true);
+                                        this.SelectNode(cur.prevSibling, true);
                                     }
                                     else
                                     {
-                                        this.SelectNode (cur, false);
+                                        this.SelectNode(cur, false);
                                     }
                                 }
                                 else
                                 {
-                                    this.SelectNode (cur, true);
+                                    this.SelectNode(cur, true);
                                 }
                                 return true;
                             }
                         }
                         if (this.selectedNode.InternalMark == 1)
                         {
-                            this.SelectNode (this.selectedNode, false);
+                            this.SelectNode(this.selectedNode, false);
                         }
                         else
                         {
@@ -843,8 +843,8 @@ namespace Facade
                         bool isMaction = false;
                         if (this.selectedNode.prevSibling.type_.type == ElementType.Maction)
                         {
-                            
-                            Node maction = ((Box_maction) this.selectedNode.prevSibling.box).target;
+
+                            Node maction = ((Box_maction)this.selectedNode.prevSibling.box).target;
                             if (maction != null)
                             {
                                 target = maction;
@@ -854,7 +854,7 @@ namespace Facade
                         else if ((this.selectedNode.InternalMark == 0) &&
                                  (this.selectedNode.parent_.type_.type == ElementType.Maction))
                         {
-                            this.SelectNode (this.selectedNode.parent_, false);
+                            this.SelectNode(this.selectedNode.parent_, false);
                             return true;
                         }
                         bool ok = false;
@@ -878,88 +878,88 @@ namespace Facade
                             }
                         }
                         if ((target == this.selectedNode.prevSibling) &&
-                            this.NotInSameContainer (this.selectedNode.prevSibling, this.selectedNode))
+                            this.NotInSameContainer(this.selectedNode.prevSibling, this.selectedNode))
                         {
-                            this.SelectNode (target, false);
-                            if (this.IsOpeningBracket (this.selectedNode))
+                            this.SelectNode(target, false);
+                            if (this.IsOpeningBracket(this.selectedNode))
                             {
-                                return this.GoLeft ();
+                                return this.GoLeft();
                             }
 
                             this.selectedNode.InternalMark = this.selectedNode.LiteralLength - 1;
-                            
+
                             return true;
                         }
-                        if (ok && this.IsClosingBracket (target))
+                        if (ok && this.IsClosingBracket(target))
                         {
                             if ((target.prevSibling != null) && (target.prevSibling.prevSibling != null))
                             {
-                                this.SelectNode (target.prevSibling, true);
+                                this.SelectNode(target.prevSibling, true);
                             }
                             else
                             {
-                                this.SelectNode (target, false);
+                                this.SelectNode(target, false);
                             }
                         }
                         else
                         {
-                            this.SelectNode (target, true);
+                            this.SelectNode(target, true);
                         }
                         if (this.selectedNode.isVisible)
                         {
                             if (this.selectedNode.skip)
                             {
-                                return this.GoLeft ();
+                                return this.GoLeft();
                             }
-                            
+
                             return true;
                         }
-                        return this.GoLeft ();
+                        return this.GoLeft();
                     }
                     if (this.selectedNode.parent_ != null)
                     {
-                    
+
                         if (this.selectedNode.level == 1)
                         {
                             return false;
                         }
-                        
-                            try
+
+                        try
+                        {
+                            if (((((this.selectedNode.parent_ != null) &&
+                                   (this.selectedNode.parent_.type_.type == ElementType.Mtd)) &&
+                                  ((this.selectedNode.parent_.nextSibling == null) &&
+                                   (this.selectedNode.parent_.prevSibling == null))) &&
+                                 (((this.selectedNode.parent_.parent_ != null) &&
+                                   (this.selectedNode.parent_.parent_.type_.type ==
+                                    ElementType.Mtr)) &&
+                                  ((this.selectedNode.parent_.parent_.prevSibling == null) &&
+                                   (this.selectedNode.parent_.parent_.parent_ != null)))) &&
+                                ((((this.selectedNode.parent_.parent_.parent_.type_.type ==
+                                    ElementType.Mtable) &&
+                                   (this.selectedNode.parent_.parent_.parent_.Class == "nugentoplevel")) &&
+                                  ((this.selectedNode.parent_.parent_.parent_.level == 1) &&
+                                   (this.selectedNode.parent_.parent_.parent_.nextSibling == null))) &&
+                                 (this.selectedNode.parent_.parent_.parent_.prevSibling == null)))
                             {
-                                if (((((this.selectedNode.parent_ != null) &&
-                                       (this.selectedNode.parent_.type_.type == ElementType.Mtd)) &&
-                                      ((this.selectedNode.parent_.nextSibling == null) &&
-                                       (this.selectedNode.parent_.prevSibling == null))) &&
-                                     (((this.selectedNode.parent_.parent_ != null) &&
-                                       (this.selectedNode.parent_.parent_.type_.type ==
-                                        ElementType.Mtr)) &&
-                                      ((this.selectedNode.parent_.parent_.prevSibling == null) &&
-                                       (this.selectedNode.parent_.parent_.parent_ != null)))) &&
-                                    ((((this.selectedNode.parent_.parent_.parent_.type_.type ==
-                                        ElementType.Mtable) &&
-                                       (this.selectedNode.parent_.parent_.parent_.Class == "nugentoplevel")) &&
-                                      ((this.selectedNode.parent_.parent_.parent_.level == 1) &&
-                                       (this.selectedNode.parent_.parent_.parent_.nextSibling == null))) &&
-                                     (this.selectedNode.parent_.parent_.parent_.prevSibling == null)))
-                                {
-                                    return false;
-                                }
+                                return false;
                             }
-                            catch
-                            {
-                            }
-                        
-                        
-                        this.SelectNode (this.selectedNode.parent_, false);
+                        }
+                        catch
+                        {
+                        }
+
+
+                        this.SelectNode(this.selectedNode.parent_, false);
                         if (this.selectedNode.isVisible)
                         {
                             if (this.selectedNode.skip)
                             {
-                                return this.GoLeft ();
+                                return this.GoLeft();
                             }
                             return true;
                         }
-                        return this.GoLeft ();
+                        return this.GoLeft();
                     }
                 }
             }
@@ -969,32 +969,32 @@ namespace Facade
             return false;
         }
         //
-        public bool GoRight ()
+        public bool GoRight()
         {
-            return this.GoRight (false);
+            return this.GoRight(false);
         }
         //
-        public bool GoRight (bool interactive)
+        public bool GoRight(bool interactive)
         {
             if (interactive)
             {
-                this.ClearSelection ();
+                this.ClearSelection();
             }
             try
             {
                 if (this.selectedNode != null)
                 {
-                    
+
                     if ((this.selectedNode.InternalMark == 0) && (this.selectedNode.type_.type == ElementType.Maction))
                     {
-                        
-                        Node mactionTarget = ((Box_maction) this.selectedNode.box).target;
+
+                        Node mactionTarget = ((Box_maction)this.selectedNode.box).target;
                         if (mactionTarget != null)
                         {
-                            this.SelectNode (mactionTarget, false);
+                            this.SelectNode(mactionTarget, false);
                             if ((this.selectedNode.firstChild != null) && this.selectedNode.skip)
                             {
-                                return this.GoRight ();
+                                return this.GoRight();
                             }
                             return true;
                         }
@@ -1009,19 +1009,19 @@ namespace Facade
                     if ((!this.selectedNode.IsAppend && (this.selectedNode.firstChild != null)) &&
                         !this.selectedNode.firstChild.isGlyph)
                     {
-                        this.SelectNode (this.selectedNode.firstChild, false);
+                        this.SelectNode(this.selectedNode.firstChild, false);
                         if (!this.selectedNode.isVisible)
                         {
-                            return this.GoRight ();
+                            return this.GoRight();
                         }
-                        
+
                         if ((this.selectedNode.firstChild != null) && this.selectedNode.skip)
                         {
-                            return this.GoRight ();
+                            return this.GoRight();
                         }
-                        if (this.IsOpeningBracket (this.selectedNode) && (this.selectedNode.nextSibling != null))
+                        if (this.IsOpeningBracket(this.selectedNode) && (this.selectedNode.nextSibling != null))
                         {
-                            return this.GoRight ();
+                            return this.GoRight();
                         }
                         return true;
                     }
@@ -1029,97 +1029,97 @@ namespace Facade
                     {
                         if (this.selectedNode.IsAppend)
                         {
-                            if (this.IsHorizAlignmentElement (this.selectedNode.nextSibling))
+                            if (this.IsHorizAlignmentElement(this.selectedNode.nextSibling))
                             {
-                                this.SelectNode (this.selectedNode.nextSibling, false);
-                                return this.GoRight ();
+                                this.SelectNode(this.selectedNode.nextSibling, false);
+                                return this.GoRight();
                             }
-                            this.SelectNext ();
+                            this.SelectNext();
                             if (this.selectedNode.isVisible)
                             {
                                 if ((!this.selectedNode.IsAppend && (this.selectedNode.firstChild != null)) &&
                                     this.selectedNode.skip)
                                 {
-                                    return this.GoRight ();
+                                    return this.GoRight();
                                 }
-                                if (this.IsClosingBracket (this.selectedNode))
+                                if (this.IsClosingBracket(this.selectedNode))
                                 {
-                                    this.SelectNode (this.selectedNode, true);
-                                    return this.GoRight ();
+                                    this.SelectNode(this.selectedNode, true);
+                                    return this.GoRight();
                                 }
                                 return true;
                             }
                             this.selectedNode.IsAppend = true;
-                            return this.GoRight ();
+                            return this.GoRight();
                         }
-                        if (this.IsClosingBracket (this.selectedNode.nextSibling))
+                        if (this.IsClosingBracket(this.selectedNode.nextSibling))
                         {
-                            this.SelectNode (this.selectedNode, true);
+                            this.SelectNode(this.selectedNode, true);
                             return true;
                         }
-                        this.SelectNext ();
+                        this.SelectNext();
                         if (this.selectedNode.isVisible)
                         {
                             if ((!this.selectedNode.IsAppend && (this.selectedNode.firstChild != null)) &&
                                 this.selectedNode.skip)
                             {
-                                return this.GoRight ();
+                                return this.GoRight();
                             }
                             return true;
                         }
                         this.selectedNode.IsAppend = true;
-                        return this.GoRight ();
+                        return this.GoRight();
                     }
                     if (this.selectedNode.nextSibling == null)
                     {
                         if (this.selectedNode.isVisible && !this.selectedNode.IsAppend)
                         {
-                            if (this.IsClosingBracket (this.selectedNode) &&
+                            if (this.IsClosingBracket(this.selectedNode) &&
                                 (this.selectedNode.parent_.type_.type == ElementType.Mrow))
                             {
-                                this.SelectNode (this.selectedNode, true);
-                                return this.GoRight ();
+                                this.SelectNode(this.selectedNode, true);
+                                return this.GoRight();
                             }
-                            this.SelectNode (this.selectedNode, true);
+                            this.SelectNode(this.selectedNode, true);
                             return true;
                         }
-                        
+
                         if (
-                             
+
                             (((this.selectedNode.level == 1)) &&
                              (this.selectedNode.parent_.nextSibling == null)))
                         {
                             return false;
                         }
-                        
-                            try
+
+                        try
+                        {
+                            if (((((this.selectedNode.parent_ != null) &&
+                                   (this.selectedNode.parent_.type_.type == ElementType.Mtd)) &&
+                                  ((this.selectedNode.parent_.nextSibling == null) &&
+                                   (this.selectedNode.parent_.prevSibling == null))) &&
+                                 (((this.selectedNode.parent_.parent_ != null) &&
+                                   (this.selectedNode.parent_.parent_.type_.type ==
+                                    ElementType.Mtr)) &&
+                                  ((this.selectedNode.parent_.parent_.nextSibling == null) &&
+                                   (this.selectedNode.parent_.parent_.parent_ != null)))) &&
+                                ((((this.selectedNode.parent_.parent_.parent_.type_.type ==
+                                    ElementType.Mtable) &&
+                                   (this.selectedNode.parent_.parent_.parent_.Class == "nugentoplevel")) &&
+                                  ((this.selectedNode.parent_.parent_.parent_.level == 1) &&
+                                   (this.selectedNode.parent_.parent_.parent_.nextSibling == null))) &&
+                                 (this.selectedNode.parent_.parent_.parent_.prevSibling == null)))
                             {
-                                if (((((this.selectedNode.parent_ != null) &&
-                                       (this.selectedNode.parent_.type_.type == ElementType.Mtd)) &&
-                                      ((this.selectedNode.parent_.nextSibling == null) &&
-                                       (this.selectedNode.parent_.prevSibling == null))) &&
-                                     (((this.selectedNode.parent_.parent_ != null) &&
-                                       (this.selectedNode.parent_.parent_.type_.type ==
-                                        ElementType.Mtr)) &&
-                                      ((this.selectedNode.parent_.parent_.nextSibling == null) &&
-                                       (this.selectedNode.parent_.parent_.parent_ != null)))) &&
-                                    ((((this.selectedNode.parent_.parent_.parent_.type_.type ==
-                                        ElementType.Mtable) &&
-                                       (this.selectedNode.parent_.parent_.parent_.Class == "nugentoplevel")) &&
-                                      ((this.selectedNode.parent_.parent_.parent_.level == 1) &&
-                                       (this.selectedNode.parent_.parent_.parent_.nextSibling == null))) &&
-                                     (this.selectedNode.parent_.parent_.parent_.prevSibling == null)))
-                                {
-                                    return false;
-                                }
+                                return false;
                             }
-                            catch
-                            {
-                            }
-                        
+                        }
+                        catch
+                        {
+                        }
+
                         if (this.selectedNode.parent_ != null)
                         {
-                            this.SelectNode (this.selectedNode.parent_, true);
+                            this.SelectNode(this.selectedNode.parent_, true);
                             if (this.selectedNode.skip)
                             {
                                 if (((!this.selectedNode.IsAppend || (this.selectedNode.parent_ == null)) ||
@@ -1128,27 +1128,27 @@ namespace Facade
                                       (this.selectedNode.parent_.type_.type != ElementType.Munder)) &&
                                      (this.selectedNode.parent_.type_.type != ElementType.Munderover)))
                                 {
-                                    return this.GoRight ();
+                                    return this.GoRight();
                                 }
                                 if ((this.selectedNode.parent_.nextSibling != null) &&
                                     !this.selectedNode.parent_.nextSibling.skip)
                                 {
-                                    this.SelectNode (this.selectedNode.parent_.nextSibling, false);
+                                    this.SelectNode(this.selectedNode.parent_.nextSibling, false);
                                 }
                                 else
                                 {
-                                    this.SelectNode (this.selectedNode.parent_, true);
+                                    this.SelectNode(this.selectedNode.parent_, true);
                                 }
                                 return true;
                             }
                             if (((this.selectedNode.nextSibling != null) &&
-                                 this.NotInSameContainer (this.selectedNode, this.selectedNode.nextSibling)) &&
-                                !this.IsClosingBracket (this.selectedNode.nextSibling))
+                                 this.NotInSameContainer(this.selectedNode, this.selectedNode.nextSibling)) &&
+                                !this.IsClosingBracket(this.selectedNode.nextSibling))
                             {
-                                this.SelectNode (this.selectedNode.nextSibling, false);
+                                this.SelectNode(this.selectedNode.nextSibling, false);
                                 return true;
                             }
-                            
+
                             return true;
                         }
                     }
@@ -1160,7 +1160,7 @@ namespace Facade
             return false;
         }
         //
-        private bool IsHorizAlignmentElement (Node node)
+        private bool IsHorizAlignmentElement(Node node)
         {
             try
             {
@@ -1197,16 +1197,16 @@ namespace Facade
             }
         }
         //
-        public bool WordUp ()
+        public bool WordUp()
         {
-            this.ClearSelection ();
+            this.ClearSelection();
             try
             {
-                Node cur = this.GetCurrentlySelectedNode ();
+                Node cur = this.GetCurrentlySelectedNode();
                 if (cur != null)
                 {
-                    Node upper = this.FindUpper (cur);
-                    
+                    Node upper = this.FindUpper(cur);
+
                     if (upper != null)
                     {
                         if (upper.type_.type == ElementType.Math)
@@ -1215,16 +1215,16 @@ namespace Facade
                             {
                                 return false;
                             }
-                            this.SelectNode (upper.firstChild, false);
+                            this.SelectNode(upper.firstChild, false);
                             return true;
                         }
-                        
-                        this.SelectNode (upper, false);
+
+                        this.SelectNode(upper, false);
                         if (this.selectedNode.skip)
                         {
-                            return this.GoRight ();
+                            return this.GoRight();
                         }
-                        
+
                         return true;
                     }
                 }
@@ -1235,18 +1235,18 @@ namespace Facade
             return false;
         }
         //
-        public bool GoDown ()
+        public bool GoDown()
         {
-            this.ClearSelection ();
+            this.ClearSelection();
             try
             {
                 if (this.selectedNode != null)
                 {
-                    
-                    Node cur = this.GetCurrentlySelectedNode ();
-                    Node lower = this.FindLower (cur);
-                    
-                    
+
+                    Node cur = this.GetCurrentlySelectedNode();
+                    Node lower = this.FindLower(cur);
+
+
                     if (lower != null)
                     {
                         if (lower.type_.type == ElementType.Math)
@@ -1255,17 +1255,17 @@ namespace Facade
                             {
                                 return false;
                             }
-                            this.SelectNode (lower.firstChild, false);
+                            this.SelectNode(lower.firstChild, false);
                             return true;
                         }
-                       
-                        this.SelectNode (lower, false);
-                     
+
+                        this.SelectNode(lower, false);
+
                         if (this.selectedNode.skip)
                         {
-                            return this.GoRight ();
+                            return this.GoRight();
                         }
-                        
+
                         return true;
                     }
                 }
@@ -1273,11 +1273,11 @@ namespace Facade
             catch
             {
             }
-            
+
             return false;
         }
         //
-        public bool MoveSelectionPoint (SelectionDirection direction)
+        public bool MoveSelectionPoint(SelectionDirection direction)
         {
             bool r = false;
             try
@@ -1287,25 +1287,25 @@ namespace Facade
                     switch (direction)
                     {
                         case SelectionDirection.Right:
-                        {
-                            r = this.SelectionRight();
-                            break;
-                        }
+                            {
+                                r = this.SelectionRight();
+                                break;
+                            }
                         case SelectionDirection.Left:
-                        {
-                            r = this.SelectionLeft();
-                            break;
-                        }
+                            {
+                                r = this.SelectionLeft();
+                                break;
+                            }
                         case SelectionDirection.Up:
-                        {
-                            r = this.SelectionUp();
-                            break;
-                        }
+                            {
+                                r = this.SelectionUp();
+                                break;
+                            }
                         case SelectionDirection.Down:
-                        {
-                            r = this.SelectionDown();
-                            break;
-                        }
+                            {
+                                r = this.SelectionDown();
+                                break;
+                            }
                     }
                 }
                 catch
@@ -1318,11 +1318,11 @@ namespace Facade
             return r;
         }
         //
-        private bool SelectionRight ()
+        private bool SelectionRight()
         {
             try
             {
-                Node cur = this.GetCurrentlySelectedNode ();
+                Node cur = this.GetCurrentlySelectedNode();
                 if (cur == null)
                 {
                     this.HasSelection = false;
@@ -1332,7 +1332,7 @@ namespace Facade
                 {
                     return false;
                 }
-                
+
                 if (!this.HasSelection)
                 {
                     this.HasSelection = true;
@@ -1354,28 +1354,28 @@ namespace Facade
                         {
                             return false;
                         }
-                        this.SelectNode (cur, true);
+                        this.SelectNode(cur, true);
                         return true;
                     }
                     if (cur.IsAppend)
                     {
-                        this.SelectNode (cur.nextSibling, false);
-                        return this.SelectionRight ();
+                        this.SelectNode(cur.nextSibling, false);
+                        return this.SelectionRight();
                     }
-                    this.SelectNode (cur.nextSibling, false);
+                    this.SelectNode(cur.nextSibling, false);
                     return true;
                 }
                 if (((cur.nextSibling == null) || !cur.nextSibling.isVisible) && !cur.IsAppend)
                 {
-                    this.SelectNode (cur, true);
+                    this.SelectNode(cur, true);
                     return true;
                 }
                 if ((cur.nextSibling != null) || !cur.IsAppend)
                 {
                     return false;
                 }
-                
-                if (!this.IsToplevelRowCell (cur))
+
+                if (!this.IsToplevelRowCell(cur))
                 {
                     return true;
                 }
@@ -1389,7 +1389,7 @@ namespace Facade
                 {
                     return true;
                 }
-                
+
                 Node atom = nextFirst.firstChild;
                 if (atom.IsAtom())
                 {
@@ -1399,9 +1399,9 @@ namespace Facade
                         {
                             this.HasSelection = true;
                         }
-                        this.SelectNode (atom, false);
+                        this.SelectNode(atom, false);
                         atom.InternalMark = 1;
-                        
+
                         return true;
                     }
                     return false;
@@ -1410,22 +1410,22 @@ namespace Facade
                 {
                     this.HasSelection = true;
                 }
-                this.SelectNode (atom, true);
-                
+                this.SelectNode(atom, true);
+
                 return true;
             }
             catch
             {
             }
-            
+
             return false;
         }
         //
-        private bool SelectionLeft ()
+        private bool SelectionLeft()
         {
             try
             {
-                Node cur = this.GetCurrentlySelectedNode ();
+                Node cur = this.GetCurrentlySelectedNode();
                 if (cur == null)
                 {
                     this.HasSelection = false;
@@ -1435,7 +1435,7 @@ namespace Facade
                 {
                     return false;
                 }
-                
+
                 if (!this.HasSelection)
                 {
                     this.HasSelection = true;
@@ -1453,7 +1453,7 @@ namespace Facade
                     {
                         return false;
                     }
-                    this.SelectNode (cur.prevSibling, false);
+                    this.SelectNode(cur.prevSibling, false);
                     if (cur.prevSibling.IsAtom() && (cur.prevSibling.LiteralLength > 1))
                     {
                         cur.prevSibling.InternalMark = cur.prevSibling.LiteralLength - 1;
@@ -1462,7 +1462,7 @@ namespace Facade
                 }
                 if ((cur.prevSibling == null) && (cur.InternalMark == 0))
                 {
-                    if (this.IsToplevelRowCell (cur))
+                    if (this.IsToplevelRowCell(cur))
                     {
                         Node leftCont = cur.parent_.parent_.prevSibling;
                         if (leftCont != null)
@@ -1479,9 +1479,9 @@ namespace Facade
                                         {
                                             this.HasSelection = true;
                                         }
-                                        this.SelectNode (leftLast, false);
+                                        this.SelectNode(leftLast, false);
                                         leftLast.InternalMark = leftLast.LiteralLength - 1;
-                                        
+
                                     }
                                     else
                                     {
@@ -1489,8 +1489,8 @@ namespace Facade
                                         {
                                             this.HasSelection = true;
                                         }
-                                        this.SelectNode (leftLast, false);
-                                        
+                                        this.SelectNode(leftLast, false);
+
                                     }
                                 }
                                 else
@@ -1499,8 +1499,8 @@ namespace Facade
                                     {
                                         this.HasSelection = true;
                                     }
-                                    this.SelectNode (leftLast, false);
-                                    
+                                    this.SelectNode(leftLast, false);
+
                                 }
                             }
                         }
@@ -1513,18 +1513,18 @@ namespace Facade
             return false;
         }
         //
-        private bool SelectionUp ()
+        private bool SelectionUp()
         {
             try
             {
-                Node cur = this.GetCurrentlySelectedNode ();
-                
+                Node cur = this.GetCurrentlySelectedNode();
+
                 if (cur == null)
                 {
                     this.HasSelection = false;
                     return false;
                 }
-                if (!this.IsToplevelRowCell (cur))
+                if (!this.IsToplevelRowCell(cur))
                 {
                     return false;
                 }
@@ -1538,7 +1538,7 @@ namespace Facade
                 {
                     return false;
                 }
-                
+
                 Node atom = prevFirst.firstChild;
                 if (atom.IsAtom())
                 {
@@ -1548,7 +1548,7 @@ namespace Facade
                         {
                             this.HasSelection = true;
                         }
-                        this.SelectNode (atom, false);
+                        this.SelectNode(atom, false);
                         atom.InternalMark = 0;
                         return false;
                     }
@@ -1558,7 +1558,7 @@ namespace Facade
                 {
                     this.HasSelection = true;
                 }
-                this.SelectNode (atom, false);
+                this.SelectNode(atom, false);
                 return false;
             }
             catch
@@ -1567,17 +1567,17 @@ namespace Facade
             return false;
         }
         //
-        private bool SelectionDown ()
+        private bool SelectionDown()
         {
             try
             {
-                Node cur = this.GetCurrentlySelectedNode ();
+                Node cur = this.GetCurrentlySelectedNode();
                 if (cur == null)
                 {
                     this.HasSelection = false;
                     return false;
                 }
-                if (!this.IsToplevelRowCell (cur))
+                if (!this.IsToplevelRowCell(cur))
                 {
                     return false;
                 }
@@ -1591,7 +1591,7 @@ namespace Facade
                 {
                     return false;
                 }
-                
+
                 Node atom = nextFirst.firstChild;
                 if (atom.IsAtom())
                 {
@@ -1601,9 +1601,9 @@ namespace Facade
                         {
                             this.HasSelection = true;
                         }
-                        this.SelectNode (atom, false);
+                        this.SelectNode(atom, false);
                         atom.InternalMark = 0;
-                        
+
                         return false;
                     }
                     return false;
@@ -1612,7 +1612,7 @@ namespace Facade
                 {
                     this.HasSelection = true;
                 }
-                this.SelectNode (atom, false);
+                this.SelectNode(atom, false);
             }
             catch
             {
@@ -1620,7 +1620,7 @@ namespace Facade
             return false;
         }
         //
-        public bool IsClosingBracket (Node node)
+        public bool IsClosingBracket(Node node)
         {
             try
             {
@@ -1655,7 +1655,7 @@ namespace Facade
             }
         }
         //
-        public bool IsOpeningBracket (Node node)
+        public bool IsOpeningBracket(Node node)
         {
             try
             {
@@ -1690,15 +1690,15 @@ namespace Facade
             }
         }
         //
-        private Node FindLower (Node pNode)
+        private Node FindLower(Node pNode)
         {
             Node n = pNode;
-            
+
             while ((n != null) && (n.lowerNode == null))
             {
                 n = n.parent_;
             }
-            
+
             if (n != null)
             {
                 return n.lowerNode;
@@ -1707,16 +1707,16 @@ namespace Facade
             return null;
         }
         //
-        private Node FindUpper (Node pNode)
+        private Node FindUpper(Node pNode)
         {
             Node n = pNode;
-            
+
             while ((n != null) && (n.upperNode == null))
             {
                 n = n.parent_;
             }
 
-            if (n != null) 
+            if (n != null)
             {
                 return n.upperNode;
             }
@@ -1724,10 +1724,10 @@ namespace Facade
             return null;
         }
         //
-        private void SelectNext ()
+        private void SelectNext()
         {
             bool differentContainer = false;
-            if ((this.selectedNode.nextSibling != null) && this.NotInSameContainer (this.selectedNode, this.selectedNode.nextSibling))
+            if ((this.selectedNode.nextSibling != null) && this.NotInSameContainer(this.selectedNode, this.selectedNode.nextSibling))
             {
                 differentContainer = true;
             }
@@ -1738,37 +1738,37 @@ namespace Facade
                       (this.selectedNode.parent_.type_.type == ElementType.Munder)) ||
                      (this.selectedNode.parent_.type_.type == ElementType.Munderover)))
                 {
-                    this.SelectNode (this.selectedNode.parent_, true);
+                    this.SelectNode(this.selectedNode.parent_, true);
                 }
                 if ((differentContainer && !this.selectedNode.skip) &&
                     (this.selectedNode.nextSibling.isVisible && !this.selectedNode.nextSibling.skip))
                 {
                     if (this.selectedNode.nextSibling.LiteralLength > 1)
                     {
-                        this.SelectNode (this.selectedNode.nextSibling, false);
+                        this.SelectNode(this.selectedNode.nextSibling, false);
                         this.selectedNode.InternalMark = 1;
                     }
                     else
                     {
-                        this.SelectNode (this.selectedNode.nextSibling, true);
+                        this.SelectNode(this.selectedNode.nextSibling, true);
                     }
                 }
                 else
                 {
-                    this.SelectNode (this.selectedNode.nextSibling, false);
+                    this.SelectNode(this.selectedNode.nextSibling, false);
                 }
             }
             else if (differentContainer)
             {
-                this.SelectNode (this.selectedNode.nextSibling, false);
+                this.SelectNode(this.selectedNode.nextSibling, false);
             }
             else
             {
-                this.SelectNode (this.selectedNode, true);
+                this.SelectNode(this.selectedNode, true);
             }
         }
         //
-        private bool AcceptsLetters ()
+        private bool AcceptsLetters()
         {
             Node start = this.selectedNode;
             if ((start.type_.type != ElementType.Mrow) || (start.firstChild != null))
@@ -1781,10 +1781,10 @@ namespace Facade
                 if ((((!start.IsAppend && (start.InternalMark == 0)) && (start.prevSibling != null)) &&
                      ((start.prevSibling.tokenType == Tokens.TEXT) ||
                       (start.prevSibling.tokenType == Tokens.GLYPH))) &&
-                    ( this.NotInSameContainer (start.prevSibling, start)))
+                    (this.NotInSameContainer(start.prevSibling, start)))
                 {
                     start = start.prevSibling;
-                    this.SelectNode (start, true);
+                    this.SelectNode(start, true);
                     return true;
                 }
                 if (((!start.IsAppend && (start.InternalMark == 0)) && ((start.prevSibling == null) && (start.parent_ != null))) &&
@@ -1798,10 +1798,10 @@ namespace Facade
                     if (((parent.prevSibling != null) &&
                          ((parent.prevSibling.tokenType == Tokens.TEXT) ||
                           (parent.prevSibling.tokenType == Tokens.GLYPH))) &&
-                        (this.NotInSameContainer (parent.prevSibling, parent)))
+                        (this.NotInSameContainer(parent.prevSibling, parent)))
                     {
                         start = parent.prevSibling;
-                        this.SelectNode (start, true);
+                        this.SelectNode(start, true);
                         return true;
                     }
                 }
@@ -1809,7 +1809,7 @@ namespace Facade
             return false;
         }
         //
-        private bool AcceptsDigits ()
+        private bool AcceptsDigits()
         {
             Node start = this.selectedNode;
             if ((start.type_.type != ElementType.Mrow) || (start.firstChild != null))
@@ -1819,10 +1819,10 @@ namespace Facade
                     return true;
                 }
                 if (((start.InternalMark == 0) && (start.prevSibling != null)) &&
-                    ((start.prevSibling.tokenType == Tokens.NUMBER) && this.NotInSameContainer (start.prevSibling, start)))
+                    ((start.prevSibling.tokenType == Tokens.NUMBER) && this.NotInSameContainer(start.prevSibling, start)))
                 {
                     start = start.prevSibling;
-                    this.SelectNode (start, true);
+                    this.SelectNode(start, true);
                     return true;
                 }
                 if (((start.InternalMark == 0) && (start.prevSibling == null)) &&
@@ -1834,10 +1834,10 @@ namespace Facade
                         parent = parent.parent_;
                     }
                     if (((parent.prevSibling != null) && (parent.prevSibling.tokenType == Tokens.NUMBER)) &&
-                        this.NotInSameContainer (parent.prevSibling, parent))
+                        this.NotInSameContainer(parent.prevSibling, parent))
                     {
                         start = parent.prevSibling;
-                        this.SelectNode (start, true);
+                        this.SelectNode(start, true);
                         return true;
                     }
                 }
@@ -1845,18 +1845,18 @@ namespace Facade
             return false;
         }
         //
-        private bool AcceptsScript ()
+        private bool AcceptsScript()
         {
-            Node cur = this.GetCurrentlySelectedNode ();
+            Node cur = this.GetCurrentlySelectedNode();
             if ((cur.type_.type != ElementType.Mrow) || (cur.firstChild != null))
             {
-                if (this.IsMathML (cur) && (cur.IsAppend || (cur.prevSibling == null)))
+                if (this.IsMathML(cur) && (cur.IsAppend || (cur.prevSibling == null)))
                 {
                     return true;
                 }
-                if (((cur.InternalMark == 0) && (cur.prevSibling != null)) && this.IsMathML (cur.prevSibling))
+                if (((cur.InternalMark == 0) && (cur.prevSibling != null)) && this.IsMathML(cur.prevSibling))
                 {
-                    this.SelectNode (cur.prevSibling, true);
+                    this.SelectNode(cur.prevSibling, true);
                     return true;
                 }
                 if (((cur.InternalMark == 0) && (cur.prevSibling == null)) &&
@@ -1867,9 +1867,9 @@ namespace Facade
                     {
                         par = par.parent_;
                     }
-                    if ((par.prevSibling != null) && this.IsMathML (par.prevSibling))
+                    if ((par.prevSibling != null) && this.IsMathML(par.prevSibling))
                     {
-                        this.SelectNode (par.prevSibling, true);
+                        this.SelectNode(par.prevSibling, true);
                         return true;
                     }
                 }
@@ -1877,7 +1877,7 @@ namespace Facade
             return false;
         }
         //
-        public void OnInsert (bool canOverwrite)
+        public void OnInsert(bool canOverwrite)
         {
             if (canOverwrite && this.HasSelection)
             {
@@ -1888,12 +1888,12 @@ namespace Facade
             this.CanUndo = true;
         }
         //
-        public bool ApplyFencedAttributes (Node node, FencedAttributes FencedAttributes)
+        public bool ApplyFencedAttributes(Node node, FencedAttributes FencedAttributes)
         {
             try
             {
-                this.OnInsert (false);
-                AttributeBuilder.ApplyAttrs (node, FencedAttributes);
+                this.OnInsert(false);
+                AttributeBuilder.ApplyAttrs(node, FencedAttributes);
             }
             catch
             {
@@ -1901,12 +1901,12 @@ namespace Facade
             return true;
         }
         //
-        public bool ApplyFractionAttrs (Node node, FractionAttributes FractionAttributes)
+        public bool ApplyFractionAttrs(Node node, FractionAttributes FractionAttributes)
         {
             try
             {
-                this.OnInsert (false);
-                AttributeBuilder.ApplyAttrs (node, FractionAttributes);
+                this.OnInsert(false);
+                AttributeBuilder.ApplyAttrs(node, FractionAttributes);
             }
             catch
             {
@@ -1914,17 +1914,17 @@ namespace Facade
             return true;
         }
         //
-        public bool ApplyActionAttrs (Node node, ActionAttributes ActionAttributes, string statusLine)
+        public bool ApplyActionAttrs(Node node, ActionAttributes ActionAttributes, string statusLine)
         {
             try
             {
-                this.OnInsert (false);
+                this.OnInsert(false);
                 if ((ActionAttributes.actionType == ActionType.StatusLine) ||
                     (ActionAttributes.actionType == ActionType.ToolTip))
                 {
                     try
                     {
-                        if (node.HasChildren ())
+                        if (node.HasChildren())
                         {
                             Node first = node.firstChild;
                             if ((first != null) && (first.nextSibling != null))
@@ -1943,7 +1943,7 @@ namespace Facade
                 }
                 if ((node != null) && (ActionAttributes != null))
                 {
-                    AttributeBuilder.ApplyAttrs (node, ActionAttributes);
+                    AttributeBuilder.ApplyAttrs(node, ActionAttributes);
                 }
             }
             catch
@@ -1952,12 +1952,12 @@ namespace Facade
             return true;
         }
         //
-        public bool ApplyMatrixProperties (MTable Matrix)
+        public bool ApplyMatrixProperties(MTable Matrix)
         {
             try
             {
-                this.OnInsert (false);
-                Matrix.ApplyAttrs ();
+                this.OnInsert(false);
+                Matrix.ApplyAttrs();
             }
             catch
             {
@@ -1965,12 +1965,12 @@ namespace Facade
             return true;
         }
         //
-        public void clear ()
+        public void clear()
         {
             try
             {
-                this.undo.Clear ();
-                this.redo.Clear ();
+                this.undo.Clear();
+                this.redo.Clear();
             }
             catch
             {
@@ -1985,23 +1985,23 @@ namespace Facade
             this.HasSelection = false;
         }
         //
-        public void setFonts (FontCollection FontCollection)
+        public void setFonts(FontCollection FontCollection)
         {
             this.fonts_ = FontCollection;
             if (this.painter_ != null)
             {
-                this.painter_.setFonts (this.fonts_);
+                this.painter_.setFonts(this.fonts_);
             }
         }
         //
-        public bool InsertSupScript ()
+        public bool InsertSupScript()
         {
             this.CanUndo = true;
             Selection sel = null;
             bool can = false;
             if (this.HasSelection)
             {
-                sel = this.CaptureSelection ();
+                sel = this.CaptureSelection();
                 if ((sel != null))
                 {
                     can = true;
@@ -2009,36 +2009,36 @@ namespace Facade
             }
             if (can)
             {
-                this.InsertSuperScript ();
+                this.InsertSuperScript();
                 return true;
             }
-            
+
             this.HasSelection = false;
-            if (!this.ScriptEligible ())
+            if (!this.ScriptEligible())
             {
                 return false;
             }
-            if (!this.AcceptsScript ())
+            if (!this.AcceptsScript())
             {
                 return false;
             }
-            Node cur = this.GetCurrentlySelectedNode ();
-            if ((cur != null) && this.IsMathML (cur))
+            Node cur = this.GetCurrentlySelectedNode();
+            if ((cur != null) && this.IsMathML(cur))
             {
-                this.OnInsert (false);
-                Node newnode = new Node ();
-                cur.CopyTo (newnode);
+                this.OnInsert(false);
+                Node newnode = new Node();
+                cur.CopyTo(newnode);
                 newnode.IsAppend = cur.IsAppend;
                 newnode.InternalMark = cur.InternalMark;
-                Node msup = this.MakeNode ("msup");
-                cur.parent_.ReplaceChild (cur, msup);
-                msup.AdoptChild (newnode);
-                Node row = this.CreateRow ();
-                msup.AdoptChild (row);
-                this.SelectNode (row, false);
+                Node msup = this.MakeNode("msup");
+                cur.parent_.ReplaceChild(cur, msup);
+                msup.AdoptChild(newnode);
+                Node row = this.CreateRow();
+                msup.AdoptChild(row);
+                this.SelectNode(row, false);
                 try
                 {
-                    this.InsertHappened ();
+                    this.InsertHappened();
                 }
                 catch
                 {
@@ -2047,14 +2047,14 @@ namespace Facade
             return true;
         }
         //
-        public bool InsertSubSupScript ()
+        public bool InsertSubSupScript()
         {
             this.CanUndo = true;
             Selection sel = null;
             bool hasSel = false;
             if (this.HasSelection)
             {
-                sel = this.CaptureSelection ();
+                sel = this.CaptureSelection();
                 if ((sel != null))
                 {
                     hasSel = true;
@@ -2062,37 +2062,37 @@ namespace Facade
             }
             if (hasSel)
             {
-                this.InsertSubSup ();
+                this.InsertSubSup();
                 return true;
             }
             this.HasSelection = false;
-            if (!this.ScriptEligible ())
+            if (!this.ScriptEligible())
             {
                 return false;
             }
-            if (!this.AcceptsScript ())
+            if (!this.AcceptsScript())
             {
                 return false;
             }
-            Node cur = this.GetCurrentlySelectedNode ();
-            if ((cur != null) && this.IsMathML (cur))
+            Node cur = this.GetCurrentlySelectedNode();
+            if ((cur != null) && this.IsMathML(cur))
             {
-                this.OnInsert (false);
-                Node newnode = new Node ();
-                cur.CopyTo (newnode);
+                this.OnInsert(false);
+                Node newnode = new Node();
+                cur.CopyTo(newnode);
                 newnode.IsAppend = cur.IsAppend;
                 newnode.InternalMark = cur.InternalMark;
-                Node subnode = this.MakeNode ("msubsup");
-                cur.parent_.ReplaceChild (cur, subnode);
-                subnode.AdoptChild (newnode);
-                Node row = this.CreateRow ();
-                subnode.AdoptChild (row);
-                Node row2 = this.CreateRow ();
-                subnode.AdoptChild (row2);
-                this.SelectNode (row, false);
+                Node subnode = this.MakeNode("msubsup");
+                cur.parent_.ReplaceChild(cur, subnode);
+                subnode.AdoptChild(newnode);
+                Node row = this.CreateRow();
+                subnode.AdoptChild(row);
+                Node row2 = this.CreateRow();
+                subnode.AdoptChild(row2);
+                this.SelectNode(row, false);
                 try
                 {
-                    this.InsertHappened ();
+                    this.InsertHappened();
                 }
                 catch
                 {
@@ -2101,14 +2101,14 @@ namespace Facade
             return true;
         }
         //
-        public bool InsertSubScript ()
+        public bool InsertSubScript()
         {
             this.CanUndo = true;
             Selection selection = null;
             bool hasSel = false;
             if (this.HasSelection)
             {
-                selection = this.CaptureSelection ();
+                selection = this.CaptureSelection();
                 if ((selection != null))
                 {
                     hasSel = true;
@@ -2116,35 +2116,35 @@ namespace Facade
             }
             if (hasSel)
             {
-                this.InsertSubscript ();
+                this.InsertSubscript();
                 return true;
             }
             this.HasSelection = false;
-            if (!this.ScriptEligible ())
+            if (!this.ScriptEligible())
             {
                 return false;
             }
-            if (!this.AcceptsScript ())
+            if (!this.AcceptsScript())
             {
                 return false;
             }
-            Node cur = this.GetCurrentlySelectedNode ();
-            if ((cur != null) && this.IsMathML (cur))
+            Node cur = this.GetCurrentlySelectedNode();
+            if ((cur != null) && this.IsMathML(cur))
             {
-                this.OnInsert (false);
-                Node newnode = new Node ();
-                cur.CopyTo (newnode);
+                this.OnInsert(false);
+                Node newnode = new Node();
+                cur.CopyTo(newnode);
                 newnode.IsAppend = cur.IsAppend;
                 newnode.InternalMark = cur.InternalMark;
-                Node sub = this.MakeNode ("msub");
-                cur.parent_.ReplaceChild (cur, sub);
-                sub.AdoptChild (newnode);
-                Node row = this.CreateRow ();
-                sub.AdoptChild (row);
-                this.SelectNode (row, false);
+                Node sub = this.MakeNode("msub");
+                cur.parent_.ReplaceChild(cur, sub);
+                sub.AdoptChild(newnode);
+                Node row = this.CreateRow();
+                sub.AdoptChild(row);
+                this.SelectNode(row, false);
                 try
                 {
-                    this.InsertHappened ();
+                    this.InsertHappened();
                 }
                 catch
                 {
@@ -2153,17 +2153,17 @@ namespace Facade
             return true;
         }
         //
-        public void SetSchemas (string MathMLSchema)
+        public void SetSchemas(string MathMLSchema)
         {
             this.mathmlSchema = MathMLSchema;
         }
         //
-        public bool EnterPressed_NeedSplit ()
+        public bool EnterPressed_NeedSplit()
         {
             try
             {
-                this.OnInsert (true);
-                return this.EnterPressed_NeedSplit (true);
+                this.OnInsert(true);
+                return this.EnterPressed_NeedSplit(true);
             }
             catch
             {
@@ -2171,12 +2171,12 @@ namespace Facade
             }
         }
         //
-        private bool EnterPressed_NeedSplit (bool splitCell)
+        private bool EnterPressed_NeedSplit(bool splitCell)
         {
             bool isTop = false;
             try
             {
-                Node cur = this.GetCurrentlySelectedNode ();
+                Node cur = this.GetCurrentlySelectedNode();
                 if (((cur == null)) || (cur.type_.type == ElementType.Math))
                 {
                     return isTop;
@@ -2231,13 +2231,13 @@ namespace Facade
                             xml = xml + "</mtr>";
                             xml = xml + "</mtable>";
                             xml = xml + "</math>";
-                            XmlDocument doc = new XmlDocument ();
-                            doc.LoadXml (xml);
+                            XmlDocument doc = new XmlDocument();
+                            doc.LoadXml(xml);
                             XmlNode topnode = doc.DocumentElement.FirstChild;
-                            Node newNode = new Node ();
-                            Node newSelected = newNode.Parse (topnode, this.types_, this.entityManager, true, null);
+                            Node newNode = new Node();
+                            Node newSelected = newNode.Parse(topnode, this.types_, this.entityManager, true, null);
                             Node toSel = null;
-                            if (newNode.HasChildren ())
+                            if (newNode.HasChildren())
                             {
                                 newNode = newNode.firstChild;
                             }
@@ -2247,17 +2247,17 @@ namespace Facade
                             }
                             if (isfirst)
                             {
-                                row.PrependNode (newNode);
-                                this.PropogateAttributes (row, newNode);
+                                row.PrependNode(newNode);
+                                this.PropogateAttributes(row, newNode);
                                 if ((newSelected.type_.type == ElementType.Mtd) && (newSelected.numChildren == 0))
                                 {
-                                    newSelected.AdoptChild (this.CreateRow ());
+                                    newSelected.AdoptChild(this.CreateRow());
                                 }
-                                this.SelectNode (cur, false);
+                                this.SelectNode(cur, false);
                                 return isTop;
                             }
-                            row.AppendNode (newNode);
-                            this.PropogateAttributes (row, newNode);
+                            row.AppendNode(newNode);
+                            this.PropogateAttributes(row, newNode);
                             if (newSelected == null)
                             {
                                 return isTop;
@@ -2274,7 +2274,7 @@ namespace Facade
                                         Node rrow = cel.parent_;
                                         while (rrow.numChildren > 0)
                                         {
-                                            this.ReParent (rrow.firstChild.parent_, newSelected, rrow.firstChild);
+                                            this.ReParent(rrow.firstChild.parent_, newSelected, rrow.firstChild);
                                             if (num == 0)
                                             {
                                                 toSel = rrow.firstChild;
@@ -2284,7 +2284,7 @@ namespace Facade
                                         if ((rrow.type_.type == ElementType.Mtd) &&
                                             (rrow.numChildren == 0))
                                         {
-                                            rrow.AdoptChild (this.CreateRow ());
+                                            rrow.AdoptChild(this.CreateRow());
                                         }
                                     }
                                     else
@@ -2296,11 +2296,11 @@ namespace Facade
                                         }
                                         else if (!cel.IsAppend && (cel.literalText.Length > 1))
                                         {
-                                            this.CarriageReturn (cel, ref wasSplit);
+                                            this.CarriageReturn(cel, ref wasSplit);
                                         }
                                         while (cel.nextSibling != null)
                                         {
-                                            this.ReParent (cel.nextSibling.parent_, newSelected, cel.nextSibling);
+                                            this.ReParent(cel.nextSibling.parent_, newSelected, cel.nextSibling);
                                             if (num == 0)
                                             {
                                                 toSel = cel.nextSibling;
@@ -2311,51 +2311,51 @@ namespace Facade
                                 }
                                 if (toSel != null)
                                 {
-                                    this.SelectNode (toSel, false);
+                                    this.SelectNode(toSel, false);
                                     if (toSel.type_.type == ElementType.Mtd)
                                     {
                                         if (toSel.firstChild != null)
                                         {
-                                            this.SelectNode (toSel.firstChild, false);
+                                            this.SelectNode(toSel.firstChild, false);
                                         }
                                         else
                                         {
-                                            toSel.AdoptChild (this.CreateRow ());
-                                            toSel.UpdateChildrenIndices ();
-                                            toSel.UpdateLevel ();
-                                            this.SelectNode (toSel.firstChild, false);
+                                            toSel.AdoptChild(this.CreateRow());
+                                            toSel.UpdateChildrenIndices();
+                                            toSel.UpdateLevel();
+                                            this.SelectNode(toSel.firstChild, false);
                                         }
                                     }
                                 }
                                 if (((newSelected != null) && (newSelected.type_.type == ElementType.Mtd)) &&
                                     (newSelected.numChildren == 0))
                                 {
-                                    newSelected.AdoptChild (this.CreateRow ());
-                                    newSelected.UpdateChildrenIndices ();
-                                    newSelected.UpdateLevel ();
-                                    this.SelectNode (newSelected.firstChild, false);
+                                    newSelected.AdoptChild(this.CreateRow());
+                                    newSelected.UpdateChildrenIndices();
+                                    newSelected.UpdateLevel();
+                                    this.SelectNode(newSelected.firstChild, false);
                                 }
                                 return isTop;
                             }
                             if (newSelected.firstChild != null)
                             {
-                                this.SelectNode (newSelected.firstChild, false);
+                                this.SelectNode(newSelected.firstChild, false);
                                 return isTop;
                             }
-                            newSelected.AdoptChild (this.CreateRow ());
+                            newSelected.AdoptChild(this.CreateRow());
                             if (newSelected.firstChild != null)
                             {
-                                this.SelectNode (newSelected.firstChild, false);
+                                this.SelectNode(newSelected.firstChild, false);
                             }
                         }
                         return isTop;
                     }
-                    this.MakeTopTable ();
+                    this.MakeTopTable();
                     return isTop;
                 }
                 finally
                 {
-                    this.SelectCell ();
+                    this.SelectCell();
                     isTop = true;
                 }
             }
@@ -2365,12 +2365,12 @@ namespace Facade
             return isTop;
         }
         //
-        private void BackspaceCell ()
+        private void BackspaceCell()
         {
             try
             {
                 bool empty = false;
-                Node cur = this.GetCurrentlySelectedNode ();
+                Node cur = this.GetCurrentlySelectedNode();
                 Node par = cur;
                 if (((cur.type_.type == ElementType.Mrow) && (cur.nextSibling == null)) &&
                     ((cur.prevSibling == null) && (cur.numChildren == 0)))
@@ -2397,7 +2397,7 @@ namespace Facade
                 {
                     return;
                 }
-                this.OnInsert (true);
+                this.OnInsert(true);
                 Node prevCell = prev.firstChild;
                 Node prevAtom = null;
                 if ((((cell.numChildren > 0) && (prevCell != null)) &&
@@ -2407,11 +2407,11 @@ namespace Facade
                     prevAtom = prevCell.firstChild;
                 }
                 Node fc = null;
-                this.SelectNode (prev, false);
+                this.SelectNode(prev, false);
                 for (int i = 0; cell.numChildren > 0; i++)
                 {
                     Node child = cell.firstChild;
-                    this.ReParent (cell, prevCell, child);
+                    this.ReParent(cell, prevCell, child);
                     if (i == 0)
                     {
                         fc = child;
@@ -2422,61 +2422,61 @@ namespace Facade
                 {
                     isLast = true;
                 }
-                this.Tear (row, false, false);
+                this.Tear(row, false, false);
                 if (isLast)
                 {
-                    this.ChopUpperLowerNodes (table);
+                    this.ChopUpperLowerNodes(table);
                 }
                 if (empty && (fc.prevSibling != null))
                 {
                     if (((fc.prevSibling.type_.type == ElementType.Mrow) &&
                          (fc.prevSibling.prevSibling == null)) && (fc.prevSibling.numChildren == 0))
                     {
-                        this.SelectNode (fc.prevSibling, false);
+                        this.SelectNode(fc.prevSibling, false);
                     }
                     else
                     {
-                        this.SelectNode (fc.prevSibling, true);
+                        this.SelectNode(fc.prevSibling, true);
                     }
-                    this.Tear (fc, false, false);
+                    this.Tear(fc, false, false);
                 }
                 else
                 {
-                    this.SelectNode (fc, false);
+                    this.SelectNode(fc, false);
                 }
                 if (prevAtom != null)
                 {
-                    this.Tear (prevAtom, false, false);
+                    this.Tear(prevAtom, false, false);
                 }
             }
             finally
             {
-                this.SelectCell ();
-                this.ReparentCell ();
+                this.SelectCell();
+                this.ReparentCell();
             }
         }
         //
-        private void MakeTopTable ()
+        private void MakeTopTable()
         {
-            Node root = this.FindRoot ();
+            Node root = this.FindRoot();
             if (root != null)
             {
                 bool append = false;
                 bool isLast = false;
                 Node top = null;
                 bool wasSplit = false;
-                Node cur = this.GetCurrentlySelectedNode ();
-                top = this.FindRootChild ();
+                Node cur = this.GetCurrentlySelectedNode();
+                top = this.FindRootChild();
                 if (((top != null) && (top.parent_ != null)) && (top.parent_ == root))
                 {
                     if (top != cur)
                     {
-                        this.SelectNode (top, false);
-                        cur = this.GetCurrentlySelectedNode ();
+                        this.SelectNode(top, false);
+                        cur = this.GetCurrentlySelectedNode();
                     }
                     if (((cur.InternalMark > 0) && !cur.IsAppend) && ((cur.literalText != null) && (cur.literalText.Length > 1)))
                     {
-                        cur = this.CarriageReturn (cur, ref wasSplit);
+                        cur = this.CarriageReturn(cur, ref wasSplit);
                     }
                     append = cur.IsAppend;
                     if (append)
@@ -2487,13 +2487,13 @@ namespace Facade
                         }
                         else if (cur == top)
                         {
-                            this.SelectNode (cur.nextSibling, false);
-                            cur = this.GetCurrentlySelectedNode ();
+                            this.SelectNode(cur.nextSibling, false);
+                            cur = this.GetCurrentlySelectedNode();
                             top = cur;
                             append = false;
                         }
                     }
-                    string xml =  "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">";
+                    string xml = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">";
                     xml += "<mtable columnalign=\"left\" class=\"nugentoplevel\">";
                     xml = xml + "<mtr>";
                     xml = xml + "<mtd><mrow></mrow></mtd>";
@@ -2503,11 +2503,11 @@ namespace Facade
                     xml = xml + "</mtr>";
                     xml = xml + "</mtable>";
                     xml = xml + "</math>";
-                    XmlDocument doc = new XmlDocument ();
-                    doc.LoadXml (xml);
+                    XmlDocument doc = new XmlDocument();
+                    doc.LoadXml(xml);
                     XmlNode first = doc.DocumentElement.FirstChild;
-                    Node r = new Node ();
-                    Node sel = r.Parse (first, this.types_, this.entityManager, true, null);
+                    Node r = new Node();
+                    Node sel = r.Parse(first, this.types_, this.entityManager, true, null);
                     Node last = r;
                     Node next = sel;
                     Node prev = next.parent_.prevSibling.firstChild;
@@ -2516,9 +2516,9 @@ namespace Facade
                         (((prev.type_.type == ElementType.Mtd) &&
                           (next.type_.type == ElementType.Mtd)) && (root.numChildren > 0)))
                     {
-                        root.firstChild.PrependNode (last);
-                        root.UpdateChildrenIndices ();
-                        root.UpdateLevel ();
+                        root.firstChild.PrependNode(last);
+                        root.UpdateChildrenIndices();
+                        root.UpdateLevel();
                         int count = 0;
                         while (last.nextSibling != null)
                         {
@@ -2536,48 +2536,48 @@ namespace Facade
                             }
                             if (count == 0)
                             {
-                                this.ReParent (ns.parent_, prev, ns);
+                                this.ReParent(ns.parent_, prev, ns);
                                 continue;
                             }
-                            this.ReParent (ns.parent_, next, ns);
+                            this.ReParent(ns.parent_, next, ns);
                         }
                         Node pc = prev.firstChild;
                         Node nc = next.firstChild;
                         if (((pc != null) && (pc.type_.type == ElementType.Mrow)) &&
                             ((pc.numChildren == 0) && (pc.nextSibling != null)))
                         {
-                            this.Tear (pc, false, false);
+                            this.Tear(pc, false, false);
                         }
                         if (((nc != null) && (nc.type_.type == ElementType.Mrow)) &&
                             ((nc.numChildren == 0) && (nc.nextSibling != null)))
                         {
-                            this.SelectNode (nc.nextSibling, false);
-                            this.Tear (nc, false, false);
+                            this.SelectNode(nc.nextSibling, false);
+                            this.Tear(nc, false, false);
                         }
                         if (isLast)
                         {
-                            this.SelectNode (next.firstChild, false);
+                            this.SelectNode(next.firstChild, false);
                         }
                         else
                         {
-                            this.SelectNode (cur, false);
+                            this.SelectNode(cur, false);
                         }
                     }
                 }
             }
         }
         //
-        private void ReparentCell ()
+        private void ReparentCell()
         {
             try
             {
-                Node cur = this.GetCurrentlySelectedNode ();
+                Node cur = this.GetCurrentlySelectedNode();
                 Node par = null;
                 Node first = null;
                 Node sib = null;
                 Node cell = null;
                 Node target = null;
-                
+
                 par = cur;
                 while ((par.parent_ != null) && (par.type_.type != ElementType.Math))
                 {
@@ -2611,20 +2611,20 @@ namespace Facade
                 }
                 while (target.numChildren > 0)
                 {
-                    this.ReParent (target, first, target.firstChild);
+                    this.ReParent(target, first, target.firstChild);
                 }
-                this.Tear (sib, false, false);
+                this.Tear(sib, false, false);
             }
             catch
             {
             }
         }
         //
-        private bool DeleteCell (Node node)
+        private bool DeleteCell(Node node)
         {
             try
             {
-                if ((!this.HasSelection && (node.parent_ != null)) && this.IsEmptyCell (node.parent_))
+                if ((!this.HasSelection && (node.parent_ != null)) && this.IsEmptyCell(node.parent_))
                 {
                     Node row = node.parent_.parent_;
                     if (row.type_.type != ElementType.Mtr)
@@ -2632,29 +2632,29 @@ namespace Facade
                         return false;
                     }
                     Node table = row.parent_;
-                    if ((row.nextSibling == null) || !this.IsEmptyRow (row))
+                    if ((row.nextSibling == null) || !this.IsEmptyRow(row))
                     {
                         return false;
                     }
                     bool isFirst = false;
-                    this.GoDown ();
+                    this.GoDown();
                     if (row.prevSibling == null)
                     {
                         isFirst = true;
                     }
-                    this.Tear (row, false, false);
+                    this.Tear(row, false, false);
                     if (isFirst)
                     {
-                        this.ChopUpperLowerNodes (table);
+                        this.ChopUpperLowerNodes(table);
                     }
-                    this.ReparentCell ();
+                    this.ReparentCell();
                     return true;
                 }
                 if (((!this.HasSelection && (node.parent_ != null)) && (node.IsAppend && (node.nextSibling == null))) &&
                     (((node.parent_.type_.type == ElementType.Mtd) &&
                       (node.parent_.nextSibling == null)) && (node.parent_.prevSibling == null)))
                 {
-                    
+
                     Node cell = null;
                     Node row = null;
                     Node nextRow = null;
@@ -2667,9 +2667,9 @@ namespace Facade
                             cell = nextRow.firstChild;
                             if (cell.firstChild != null)
                             {
-                                this.SelectNode (cell.firstChild, false);
-                                this.BackspaceCell ();
-                                this.ReparentCell ();
+                                this.SelectNode(cell.firstChild, false);
+                                this.BackspaceCell();
+                                this.ReparentCell();
                                 return true;
                             }
                         }
@@ -2678,17 +2678,17 @@ namespace Facade
             }
             finally
             {
-                this.SelectCell ();
+                this.SelectCell();
             }
             return false;
         }
         //
-        private Node FindRootChild ()
+        private Node FindRootChild()
         {
             Node r = null;
             try
             {
-                Node cur = this.GetCurrentlySelectedNode ();
+                Node cur = this.GetCurrentlySelectedNode();
                 while ((cur.parent_ != null) && (cur.parent_.type_.type != ElementType.Math))
                 {
                     cur = cur.parent_;
@@ -2704,12 +2704,12 @@ namespace Facade
             return r;
         }
         //
-        private Node FindRoot ()
+        private Node FindRoot()
         {
             Node r = null;
             try
             {
-                Node cur = this.GetCurrentlySelectedNode ();
+                Node cur = this.GetCurrentlySelectedNode();
                 while ((cur.parent_ != null) && (cur.type_.type != ElementType.Math))
                 {
                     cur = cur.parent_;
@@ -2725,7 +2725,7 @@ namespace Facade
             return r;
         }
         //
-        private bool IsEmptyCell (Node node)
+        private bool IsEmptyCell(Node node)
         {
             bool r = false;
             try
@@ -2734,7 +2734,7 @@ namespace Facade
                 {
                     return r;
                 }
-                if (node.HasChildren ())
+                if (node.HasChildren())
                 {
                     if (((node.numChildren == 1) && (node.firstChild.type_.type == ElementType.Mrow)) &&
                         (node.firstChild.numChildren == 0))
@@ -2751,7 +2751,7 @@ namespace Facade
             }
         }
         //
-        private bool IsEmptyRow (Node trNode)
+        private bool IsEmptyRow(Node trNode)
         {
             bool r = false;
             try
@@ -2760,9 +2760,9 @@ namespace Facade
                 {
                     return r;
                 }
-                NodesList list = trNode.GetChildrenNodes ();
+                NodesList list = trNode.GetChildrenNodes();
                 int i = 0;
-                while ((i < list.Count) && this.IsEmptyCell (list.Get (i)))
+                while ((i < list.Count) && this.IsEmptyCell(list.Get(i)))
                 {
                     i++;
                 }
@@ -2777,7 +2777,7 @@ namespace Facade
             return r;
         }
         //
-        private void ReParent (Node oldParent, Node newParent, Node node)
+        private void ReParent(Node oldParent, Node newParent, Node node)
         {
             try
             {
@@ -2815,17 +2815,17 @@ namespace Facade
                 }
                 oldParent.numChildren--;
                 newParent.numChildren++;
-                oldParent.UpdateChildrenIndices ();
-                oldParent.UpdateLevel ();
-                newParent.UpdateChildrenIndices ();
-                newParent.UpdateLevel ();
+                oldParent.UpdateChildrenIndices();
+                oldParent.UpdateLevel();
+                newParent.UpdateChildrenIndices();
+                newParent.UpdateLevel();
             }
             catch
             {
             }
         }
         //
-        private void PropogateAttributes (Node trNode1, Node trNode2)
+        private void PropogateAttributes(Node trNode1, Node trNode2)
         {
             try
             {
@@ -2834,8 +2834,8 @@ namespace Facade
                 {
                     return;
                 }
-                NodesList list1 = trNode1.GetChildrenNodes ();
-                NodesList list2 = trNode2.GetChildrenNodes ();
+                NodesList list1 = trNode1.GetChildrenNodes();
+                NodesList list2 = trNode2.GetChildrenNodes();
                 if (list1.Count != list2.Count)
                 {
                     return;
@@ -2844,31 +2844,31 @@ namespace Facade
                 {
                     if (i < list2.Count)
                     {
-                        Node child1 = list1.Get (i);
-                        Node child2 = list2.Get (i);
+                        Node child1 = list1.Get(i);
+                        Node child2 = list2.Get(i);
                         if (child1.attrs != null)
                         {
-                            child1.attrs.Reset ();
+                            child1.attrs.Reset();
                             try
                             {
                                 for (int j = 0; j < child1.attrs.Count; j++)
                                 {
-                                    Nodes.Attribute attr1 = child1.attrs.Next ();
-                                    Nodes.Attribute attr2 = new Nodes.Attribute (attr1.name, attr1.val, attr1.ns);
+                                    Nodes.Attribute attr1 = child1.attrs.Next();
+                                    Nodes.Attribute attr2 = new Nodes.Attribute(attr1.name, attr1.val, attr1.ns);
                                     if (child2.attrs == null)
                                     {
-                                        child2.attrs = new AttributeList ();
+                                        child2.attrs = new AttributeList();
                                     }
-                                    child2.attrs.Add (attr2);
+                                    child2.attrs.Add(attr2);
                                 }
                             }
                             catch
                             {
                             }
-                            child1.attrs.Reset ();
+                            child1.attrs.Reset();
                             if (child2.attrs != null)
                             {
-                                child2.attrs.Reset ();
+                                child2.attrs.Reset();
                             }
                         }
                     }
@@ -2879,26 +2879,26 @@ namespace Facade
             }
         }
         //
-        private void SelectCell ()
+        private void SelectCell()
         {
             try
             {
-                Node cur = this.GetCurrentlySelectedNode ();
+                Node cur = this.GetCurrentlySelectedNode();
                 if (cur.type_.type != ElementType.Mtd)
                 {
                     return;
                 }
                 if (cur.firstChild != null)
                 {
-                    this.SelectNode (cur.firstChild, false);
+                    this.SelectNode(cur.firstChild, false);
                 }
                 else
                 {
-                    Node row = this.CreateRow ();
-                    cur.AdoptChild (row);
+                    Node row = this.CreateRow();
+                    cur.AdoptChild(row);
                     if (cur.firstChild != null)
                     {
-                        this.SelectNode (cur.firstChild, false);
+                        this.SelectNode(cur.firstChild, false);
                     }
                 }
             }
@@ -2907,27 +2907,27 @@ namespace Facade
             }
         }
         //
-        private void ChopUpperLowerNodes (Node tableNode)
+        private void ChopUpperLowerNodes(Node tableNode)
         {
             try
             {
-                
+
                 if (tableNode.firstChild != null)
                 {
-                    NodesList list = tableNode.firstChild.GetChildrenNodes ();
+                    NodesList list = tableNode.firstChild.GetChildrenNodes();
                     for (int i = 0; i < list.Count; i++)
                     {
-                        list.Get (i).upperNode = null;
+                        list.Get(i).upperNode = null;
                     }
                 }
                 if (tableNode.lastChild == null)
                 {
                     return;
                 }
-                NodesList l = tableNode.lastChild.GetChildrenNodes ();
+                NodesList l = tableNode.lastChild.GetChildrenNodes();
                 for (int i = 0; i < l.Count; i++)
                 {
-                    l.Get (i).lowerNode = null;
+                    l.Get(i).lowerNode = null;
                 }
             }
             catch
@@ -2935,12 +2935,12 @@ namespace Facade
             }
         }
         //
-        private bool IsStretchy (Glyph entity)
+        private bool IsStretchy(Glyph entity)
         {
-            return this.IsStretchy (entity.Code);
+            return this.IsStretchy(entity.Code);
         }
         //
-        private bool IsStretchy (string sUnicode)
+        private bool IsStretchy(string sUnicode)
         {
             if (((((sUnicode != "00028") && (sUnicode != "00029")) && ((sUnicode != "0007B") && (sUnicode != "0007D"))) &&
                  (((sUnicode != "0005B") && (sUnicode != "0005D")) && ((sUnicode != "0007C") && (sUnicode != "02016")))) &&
@@ -2952,12 +2952,12 @@ namespace Facade
             return true;
         }
         //
-        public bool Space ()
+        public bool Space()
         {
-            bool r = this.InsertSpace ();
+            bool r = this.InsertSpace();
             try
             {
-                this.InsertHappened ();
+                this.InsertHappened();
             }
             catch
             {
@@ -2965,23 +2965,23 @@ namespace Facade
             return r;
         }
         //
-        private bool InsertSpace ()
+        private bool InsertSpace()
         {
-            this.OnInsert (true);
+            this.OnInsert(true);
             try
             {
-                Node cur = this.GetCurrentlySelectedNode ();
+                Node cur = this.GetCurrentlySelectedNode();
 
-                if (!this.ScriptEligible ())
+                if (!this.ScriptEligible())
                 {
                     return false;
                 }
-                cur = this.GetCurrentlySelectedNode ();
+                cur = this.GetCurrentlySelectedNode();
                 if (cur != null)
                 {
-                    
-                        this.insertMathML (false,
-                                   "<math xmlns='http://www.w3.org/1998/Math/MathML'><mspace nugenCursorEnd='' width='mediummathspace' height='0.2em'/></math>");
+
+                    this.insertMathML(false,
+                               "<math xmlns='http://www.w3.org/1998/Math/MathML'><mspace nugenCursorEnd='' width='mediummathspace' height='0.2em'/></math>");
                 }
             }
             catch
@@ -2991,13 +2991,13 @@ namespace Facade
             return true;
         }
         //
-        public bool InsertChar (char sKey, bool bStretchyBrackets, bool bAutoClosingBrackets)
+        public bool InsertChar(char sKey, bool bStretchyBrackets, bool bAutoClosingBrackets)
         {
             bool r = false;
-            r = this.InsertCharacter (sKey, bStretchyBrackets, bAutoClosingBrackets);
+            r = this.InsertCharacter(sKey, bStretchyBrackets, bAutoClosingBrackets);
             try
             {
-                this.InsertHappened ();
+                this.InsertHappened();
             }
             catch
             {
@@ -3005,7 +3005,7 @@ namespace Facade
             return r;
         }
         //
-        private bool InsertCharacter (char sKey, bool bStretchyBrackets, bool bAutoClosingBrackets)
+        private bool InsertCharacter(char sKey, bool bStretchyBrackets, bool bAutoClosingBrackets)
         {
             Node node = null;
             bool canInsert = false;
@@ -3022,7 +3022,7 @@ namespace Facade
             }
             else
             {
-                node = this.GetCurrentlySelectedNode ();
+                node = this.GetCurrentlySelectedNode();
                 if ((node != null) && (node.type_ != null))
                 {
                     {
@@ -3030,133 +3030,133 @@ namespace Facade
                     }
                 }
             }
-            node = this.GetCurrentlySelectedNode ();
+            node = this.GetCurrentlySelectedNode();
 
             if (canInsert)
             {
                 if (sKey == '+')
                 {
-                    this.insertMathML (
+                    this.insertMathML(
                         "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&plus;</mo></math>");
                     return true;
                 }
                 if (sKey == '-')
                 {
-                    this.insertMathML (
+                    this.insertMathML(
                         "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&minus;</mo></math>");
                     return true;
                 }
                 if (sKey == '<')
                 {
-                    this.insertMathML (
+                    this.insertMathML(
                         "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&lt;</mo></math>");
                     return true;
                 }
                 if (sKey == '>')
                 {
-                    this.insertMathML (
+                    this.insertMathML(
                         "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&gt;</mo></math>");
                     return true;
                 }
                 if (sKey == '&')
                 {
-                    this.insertMathML (
+                    this.insertMathML(
                         "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&amp;</mo></math>");
                     return true;
                 }
                 if (sKey == '%')
                 {
-                    this.insertMathML ("<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>%</mo></math>");
+                    this.insertMathML("<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>%</mo></math>");
                     return true;
                 }
                 if (sKey == '@')
                 {
-                    this.insertMathML ("<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>@</mo></math>");
+                    this.insertMathML("<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>@</mo></math>");
                     return true;
                 }
-                
+
                 if (sKey == '`')
                 {
                     return true;
                 }
                 if (sKey == '_')
                 {
-                    this.insertMathML (
+                    this.insertMathML(
                         "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&lowbar;</mo></math>");
                     return true;
                 }
                 if (sKey == '?')
                 {
-                    this.insertMathML ("<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>?</mo></math>");
+                    this.insertMathML("<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>?</mo></math>");
                     return true;
                 }
                 if (sKey == '/')
                 {
-                    this.insertMathML (
+                    this.insertMathML(
                         "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&sol;</mo></math>");
                     return true;
                 }
                 if (sKey == '*')
                 {
-                    this.insertMathML (
+                    this.insertMathML(
                         "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&times;</mo></math>");
                     return true;
                 }
                 if (sKey == '=')
                 {
-                    this.insertMathML (
+                    this.insertMathML(
                         "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&equals;</mo></math>");
                     return true;
                 }
                 if (sKey == ',')
                 {
-                    this.insertMathML (
+                    this.insertMathML(
                         "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&comma;</mo></math>");
                     return true;
                 }
                 if (sKey == '!')
                 {
-                    this.insertMathML (
+                    this.insertMathML(
                         "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&excl;</mo></math>");
                     return true;
                 }
                 if (sKey == '"')
                 {
-                    this.insertMathML (
+                    this.insertMathML(
                         "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&quot;</mo></math>");
                     return true;
                 }
                 if (sKey == '\'')
                 {
-                    this.insertMathML (
+                    this.insertMathML(
                         "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&apos;</mo></math>");
                     return true;
                 }
                 if (sKey == '#')
                 {
-                    this.insertMathML (
+                    this.insertMathML(
                         "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&num;</mo></math>");
                     return true;
                 }
                 if (sKey == '~')
                 {
-                    this.insertMathML (
+                    this.insertMathML(
                         "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&sim;</mo></math>");
                     return true;
                 }
                 if (sKey == ':')
                 {
-                    this.insertMathML ("<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>:</mo></math>");
+                    this.insertMathML("<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>:</mo></math>");
                     return true;
                 }
                 if (sKey == ';')
                 {
-                    this.insertMathML ("<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>;</mo></math>");
+                    this.insertMathML("<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>;</mo></math>");
                     return true;
                 }
                 if (sKey == '\x00a7')
                 {
-                    this.insertMathML (
+                    this.insertMathML(
                         "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&sect;</mo></math>");
                     return true;
                 }
@@ -3164,12 +3164,12 @@ namespace Facade
                 {
                     if (bStretchyBrackets)
                     {
-                        this.insertMathML (
+                        this.insertMathML(
                             "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>|</mo></math>");
                     }
                     else
                     {
-                        this.insertMathML (
+                        this.insertMathML(
                             "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo stretchy=\"false\" nugenCursorEnd=''>|</mo></math>");
                     }
                     return true;
@@ -3180,21 +3180,21 @@ namespace Facade
                     {
                         if (bStretchyBrackets)
                         {
-                            this.InsertFenced ("lpar", "rpar", true);
+                            this.InsertFenced("lpar", "rpar", true);
                         }
                         else
                         {
-                            this.InsertFenced ("lpar", "rpar", false);
+                            this.InsertFenced("lpar", "rpar", false);
                         }
                     }
                     else if (bStretchyBrackets)
                     {
-                        this.insertMathML (
+                        this.insertMathML(
                             "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&lpar;</mo></math>");
                     }
                     else
                     {
-                        this.insertMathML (
+                        this.insertMathML(
                             "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo stretchy=\"false\" nugenCursorEnd=''>&lpar;</mo></math>");
                     }
                     return true;
@@ -3205,21 +3205,21 @@ namespace Facade
                     {
                         if (bStretchyBrackets)
                         {
-                            this.InsertFenced ("lbrace", "rbrace", true);
+                            this.InsertFenced("lbrace", "rbrace", true);
                         }
                         else
                         {
-                            this.InsertFenced ("lbrace", "rbrace", false);
+                            this.InsertFenced("lbrace", "rbrace", false);
                         }
                     }
                     else if (bStretchyBrackets)
                     {
-                        this.insertMathML (
+                        this.insertMathML(
                             "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&lbrace;</mo></math>");
                     }
                     else
                     {
-                        this.insertMathML (
+                        this.insertMathML(
                             "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo stretchy=\"false\" nugenCursorEnd=''>&lbrace;</mo></math>");
                     }
                     return true;
@@ -3230,21 +3230,21 @@ namespace Facade
                     {
                         if (bStretchyBrackets)
                         {
-                            this.InsertFenced ("lbrack", "rbrack", true);
+                            this.InsertFenced("lbrack", "rbrack", true);
                         }
                         else
                         {
-                            this.InsertFenced ("lbrack", "rbrack", false);
+                            this.InsertFenced("lbrack", "rbrack", false);
                         }
                     }
                     else if (bStretchyBrackets)
                     {
-                        this.insertMathML (
+                        this.insertMathML(
                             "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&lbrack;</mo></math>");
                     }
                     else
                     {
-                        this.insertMathML (
+                        this.insertMathML(
                             "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo stretchy=\"false\" nugenCursorEnd=''>&lbrack;</mo></math>");
                     }
                     return true;
@@ -3253,12 +3253,12 @@ namespace Facade
                 {
                     if (bStretchyBrackets)
                     {
-                        this.insertMathML (
+                        this.insertMathML(
                             "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&rpar;</mo></math>");
                     }
                     else
                     {
-                        this.insertMathML (
+                        this.insertMathML(
                             "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo stretchy=\"false\" nugenCursorEnd=''>&rpar;</mo></math>");
                     }
                     return true;
@@ -3267,12 +3267,12 @@ namespace Facade
                 {
                     if (bStretchyBrackets)
                     {
-                        this.insertMathML (
+                        this.insertMathML(
                             "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&rbrace;</mo></math>");
                     }
                     else
                     {
-                        this.insertMathML (
+                        this.insertMathML(
                             "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo stretchy=\"false\" nugenCursorEnd=''>&rbrace;</mo></math>");
                     }
                     return true;
@@ -3281,12 +3281,12 @@ namespace Facade
                 {
                     if (bStretchyBrackets)
                     {
-                        this.insertMathML (
+                        this.insertMathML(
                             "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo nugenCursorEnd=''>&rbrack;</mo></math>");
                     }
                     else
                     {
-                        this.insertMathML (
+                        this.insertMathML(
                             "<math xmlns='http://www.w3.org/1998/Math/MathML'><mo stretchy=\"false\" nugenCursorEnd=''>&rbrack;</mo></math>");
                     }
                     return true;
@@ -3295,21 +3295,21 @@ namespace Facade
                 {
                     try
                     {
-                        int g = Convert.ToInt32 (sKey);
+                        int g = Convert.ToInt32(sKey);
                         if (g > 0x7f)
                         {
-                            Glyph glyph = this.entityManager.ByUnicode (g.ToString ("X5"));
+                            Glyph glyph = this.entityManager.ByUnicode(g.ToString("X5"));
                             if (glyph != null)
                             {
                                 if (glyph.Name == "deg")
                                 {
-                                    this.insertMathML (
+                                    this.insertMathML(
                                         "<math xmlns='http://www.w3.org/1998/Math/MathML'><mi mathvariant=\"normal\" nugenCursorEnd=''>&" +
                                         glyph.Name + ";</mi></math>");
                                 }
                                 else
                                 {
-                                    this.insertMathML (
+                                    this.insertMathML(
                                         "<math xmlns='http://www.w3.org/1998/Math/MathML'><mi nugenCursorEnd=''>&" +
                                         glyph.Name + ";</mi></math>");
                                 }
@@ -3322,13 +3322,13 @@ namespace Facade
                     }
                 }
             }
-            node = this.GetCurrentlySelectedNode ();
-            this.OnInsert (true);
-            if (!this.ScriptEligible ())
+            node = this.GetCurrentlySelectedNode();
+            this.OnInsert(true);
+            if (!this.ScriptEligible())
             {
                 return false;
             }
-            node = this.GetCurrentlySelectedNode ();
+            node = this.GetCurrentlySelectedNode();
             if (node == null)
             {
                 return false;
@@ -3341,8 +3341,8 @@ namespace Facade
                 }
                 else if (node.InternalMark > 0)
                 {
-                    node.literalText = node.literalText.Substring (0, node.InternalMark) + sKey +
-                                       node.literalText.Substring (node.InternalMark, node.literalText.Length - node.InternalMark);
+                    node.literalText = node.literalText.Substring(0, node.InternalMark) + sKey +
+                                       node.literalText.Substring(node.InternalMark, node.literalText.Length - node.InternalMark);
                 }
                 else
                 {
@@ -3351,20 +3351,20 @@ namespace Facade
                 node.InternalMark++;
                 return true;
             }
-            
-            if (char.IsDigit (sKey) || (sKey == '.'))
+
+            if (char.IsDigit(sKey) || (sKey == '.'))
             {
-                if (this.AcceptsDigits ())
+                if (this.AcceptsDigits())
                 {
-                    node = this.GetCurrentlySelectedNode ();
+                    node = this.GetCurrentlySelectedNode();
                     if (node.InternalMark == node.LiteralLength)
                     {
                         node.literalText = node.literalText + sKey;
                     }
                     else if (node.InternalMark > 0)
                     {
-                        node.literalText = node.literalText.Substring (0, node.InternalMark) + sKey +
-                                           node.literalText.Substring (node.InternalMark, node.literalText.Length - node.InternalMark);
+                        node.literalText = node.literalText.Substring(0, node.InternalMark) + sKey +
+                                           node.literalText.Substring(node.InternalMark, node.literalText.Length - node.InternalMark);
                     }
                     else
                     {
@@ -3373,22 +3373,22 @@ namespace Facade
                     node.InternalMark++;
                     return true;
                 }
-                this.insertMathML (false,
+                this.insertMathML(false,
                            "<math xmlns='http://www.w3.org/1998/Math/MathML'><mn nugenCursorEnd=''>" + sKey +
                            "</mn></math>");
                 return true;
             }
-            if (this.AcceptsLetters ())
+            if (this.AcceptsLetters())
             {
-                node = this.GetCurrentlySelectedNode ();
+                node = this.GetCurrentlySelectedNode();
                 if (node.InternalMark == node.LiteralLength)
                 {
                     node.literalText = node.literalText + sKey;
                 }
                 else if (node.InternalMark > 0)
                 {
-                    node.literalText = node.literalText.Substring (0, node.InternalMark) + sKey +
-                                       node.literalText.Substring (node.InternalMark, node.literalText.Length - node.InternalMark);
+                    node.literalText = node.literalText.Substring(0, node.InternalMark) + sKey +
+                                       node.literalText.Substring(node.InternalMark, node.literalText.Length - node.InternalMark);
                 }
                 else
                 {
@@ -3397,13 +3397,13 @@ namespace Facade
                 node.InternalMark++;
                 return true;
             }
-            this.insertMathML (false,
+            this.insertMathML(false,
                        "<math xmlns='http://www.w3.org/1998/Math/MathML'><mi nugenCursorEnd=''>" + sKey +
                        "</mi></math>");
             return true;
         }
         // 
-        private void InsertFromXml (Node currentSelectedNode, XmlNode xmlChildNode, Node newNode, ref Node newSelectedNode, ref bool selected)
+        private void InsertFromXml(Node currentSelectedNode, XmlNode xmlChildNode, Node newNode, ref Node newSelectedNode, ref bool selected)
         {
             newNode = new Node();
             newNode.Parse(xmlChildNode, this.types_, this.entityManager, false, null, false);
@@ -3412,7 +3412,7 @@ namespace Facade
                 currentSelectedNode.PrependNode(newNode);
 
                 newSelectedNode = newNode.Parse(xmlChildNode, this.types_, this.entityManager, true, null, false);
-                
+
                 if (newSelectedNode != null)
                 {
                     this.SelectNode(newSelectedNode, newSelectedNode.IsAppend);
@@ -3421,11 +3421,11 @@ namespace Facade
             }
         }
         //
-        public void ApplyStyleToSelection (StyleAttributes styleAttributes)
+        public void ApplyStyleToSelection(StyleAttributes styleAttributes)
         {
             try
             {
-                this.OnInsert (false);
+                this.OnInsert(false);
                 if (this.hasSelection)
                 {
                     {
@@ -3438,14 +3438,14 @@ namespace Facade
                 }
                 else
                 {
-                    Node cur = this.GetCurrentlySelectedNode ();
+                    Node cur = this.GetCurrentlySelectedNode();
                     if ((((cur != null) && (cur.InternalMark == 0)) &&
                          ((cur.type_ != null))) &&
                         (cur.type_.type != ElementType.Math))
                     {
                         styleAttributes.hasBackground = true;
                         styleAttributes.hasColor = true;
-                        cur.SetStyle (styleAttributes);
+                        cur.SetStyle(styleAttributes);
                     }
                 }
             }
@@ -3454,7 +3454,7 @@ namespace Facade
             }
         }
         //
-        private void ApplyStyleToSelection (StyleAttributes styleAttributes, Selection selectionCollection)
+        private void ApplyStyleToSelection(StyleAttributes styleAttributes, Selection selectionCollection)
         {
             try
             {
@@ -3463,38 +3463,38 @@ namespace Facade
                     return;
                 }
                 int count = selectionCollection.nodesList.Count;
-                selectionCollection.nodesList.Reset ();
+                selectionCollection.nodesList.Reset();
                 for (int i = 0; i < count; i++)
                 {
-                    Node n = selectionCollection.nodesList.Next ();
+                    Node n = selectionCollection.nodesList.Next();
                     if (((i <= 0) || (n != selectionCollection.Last)) || (selectionCollection.literalLength != 0))
                     {
                         styleAttributes.hasBackground = true;
                         styleAttributes.hasColor = true;
-                        n.SetStyle (styleAttributes);
+                        n.SetStyle(styleAttributes);
                     }
                 }
-                selectionCollection.nodesList.Reset ();
+                selectionCollection.nodesList.Reset();
             }
             catch
             {
             }
         }
         //
-        public StyleAttributes GetSelectionStyle ()
+        public StyleAttributes GetSelectionStyle()
         {
-            StyleAttributes style = new StyleAttributes ();
+            StyleAttributes style = new StyleAttributes();
             try
             {
                 if (!this.hasSelection)
                 {
                     return style;
                 }
-                
-                Selection sel = this.CaptureSelection ();
+
+                Selection sel = this.CaptureSelection();
                 if (sel != null)
                 {
-                    style = this.GetSelectionStyle (style, sel);
+                    style = this.GetSelectionStyle(style, sel);
                 }
             }
             catch
@@ -3503,7 +3503,7 @@ namespace Facade
             return style;
         }
         //
-        private StyleAttributes GetSelectionStyle (StyleAttributes styleAttributes, Selection selectionCollection)
+        private StyleAttributes GetSelectionStyle(StyleAttributes styleAttributes, Selection selectionCollection)
         {
             try
             {
@@ -3512,13 +3512,13 @@ namespace Facade
                     return styleAttributes;
                 }
                 int count = selectionCollection.nodesList.Count;
-                Node n = selectionCollection.nodesList.Next ();
+                Node n = selectionCollection.nodesList.Next();
                 if (n.style_ != null)
                 {
-                    n.style_.CopyTo (styleAttributes);
+                    n.style_.CopyTo(styleAttributes);
                     return styleAttributes;
                 }
-                styleAttributes = new StyleAttributes ();
+                styleAttributes = new StyleAttributes();
             }
             catch
             {
@@ -3526,52 +3526,52 @@ namespace Facade
             return styleAttributes;
         }
         //
-        public void SetClientWidth (int w)
+        public void SetClientWidth(int w)
         {
             this.clientRect.Width = w;
         }
         //
-        private bool ScriptEligible ()
+        private bool ScriptEligible()
         {
-            Node node = this.GetCurrentlySelectedNode ();
+            Node node = this.GetCurrentlySelectedNode();
             if ((node != null) && (node.type_ != null))
             {
-                
-                    if (node.type_.type == ElementType.Math)
+
+                if (node.type_.type == ElementType.Math)
+                {
+                    if (node.firstChild != null)
                     {
-                        if (node.firstChild != null)
-                        {
-                            return true;
-                        }
-                        return false;
-                    }
-                    if (((((node.type_.type == ElementType.Mo) && (node.InternalMark == 0)) &&
-                          (node.literalText != null)) &&
-                         (((node.literalText == "(") || (node.literalText == "{")) ||
-                          ((node.literalText == "[") || ((node.literalText == "|") && (node.prevSibling == null))))) &&
-                        ((node.parent_ != null) && (node.parent_.type_.type == ElementType.Mrow)))
-                    {
-                        this.SelectNode (node.parent_, false);
                         return true;
                     }
-                    if (((((node.type_.type == ElementType.Mo) && node.IsAppend) && (node.literalText != null)) &&
-                         (((node.literalText == ")") || (node.literalText == "}")) ||
-                          ((node.literalText == "]") || ((node.literalText == "|") && (node.nextSibling == null))))) &&
-                        ((node.parent_ != null) && (node.parent_.type_.type == ElementType.Mrow)))
-                    {
-                        this.SelectNode (node.parent_, true);
-                        return true;
-                    }
+                    return false;
+                }
+                if (((((node.type_.type == ElementType.Mo) && (node.InternalMark == 0)) &&
+                      (node.literalText != null)) &&
+                     (((node.literalText == "(") || (node.literalText == "{")) ||
+                      ((node.literalText == "[") || ((node.literalText == "|") && (node.prevSibling == null))))) &&
+                    ((node.parent_ != null) && (node.parent_.type_.type == ElementType.Mrow)))
+                {
+                    this.SelectNode(node.parent_, false);
                     return true;
-                
+                }
+                if (((((node.type_.type == ElementType.Mo) && node.IsAppend) && (node.literalText != null)) &&
+                     (((node.literalText == ")") || (node.literalText == "}")) ||
+                      ((node.literalText == "]") || ((node.literalText == "|") && (node.nextSibling == null))))) &&
+                    ((node.parent_ != null) && (node.parent_.type_.type == ElementType.Mrow)))
+                {
+                    this.SelectNode(node.parent_, true);
+                    return true;
+                }
+                return true;
+
             }
-            
+
             return false;
         }
         //
-        private bool IsEditable ()
+        private bool IsEditable()
         {
-            Node node = this.GetCurrentlySelectedNode ();
+            Node node = this.GetCurrentlySelectedNode();
             if (((node != null) && (node.type_ != null)))
             {
                 if (node.type_.type == ElementType.Math)
@@ -3580,7 +3580,7 @@ namespace Facade
                     {
                         return false;
                     }
-                    this.SelectNode (node.firstChild, false);
+                    this.SelectNode(node.firstChild, false);
                     return true;
                 }
                 if (((((node.type_.type == ElementType.Mo) && (node.InternalMark == 0)) && (node.literalText != null)) &&
@@ -3588,7 +3588,7 @@ namespace Facade
                       ((node.literalText == "[") || ((node.literalText == "|") && (node.prevSibling == null))))) &&
                     ((node.parent_ != null) && (node.parent_.type_.type == ElementType.Mrow)))
                 {
-                    this.SelectNode (node.parent_, false);
+                    this.SelectNode(node.parent_, false);
                     return true;
                 }
                 if (((((node.type_.type == ElementType.Mo) && node.IsAppend) && (node.literalText != null)) &&
@@ -3596,7 +3596,7 @@ namespace Facade
                       ((node.literalText == "]") || ((node.literalText == "|") && (node.nextSibling == null))))) &&
                     ((node.parent_ != null) && (node.parent_.type_.type == ElementType.Mrow)))
                 {
-                    this.SelectNode (node.parent_, true);
+                    this.SelectNode(node.parent_, true);
                     return true;
                 }
                 return true;
@@ -3604,7 +3604,7 @@ namespace Facade
             return false;
         }
         //
-        private bool IsContainer (Node node)
+        private bool IsContainer(Node node)
         {
             try
             {
@@ -3640,16 +3640,16 @@ namespace Facade
             }
         }
         //
-        public bool Back ()
+        public bool Back()
         {
             try
             {
                 if (this.HasSelection)
                 {
-                    return this.DoDelete ();
+                    return this.DoDelete();
                 }
                 this.CanUndo = true;
-                Node node = this.GetCurrentlySelectedNode ();
+                Node node = this.GetCurrentlySelectedNode();
                 if (node == null)
                 {
                     return false;
@@ -3661,42 +3661,57 @@ namespace Facade
                 {
                     if ((node.parent_.prevSibling == null) && (node.parent_.nextSibling == null))
                     {
-                        this.BackspaceCell ();
+                        this.BackspaceCell();
                         return true;
                     }
-                    return this.GoLeft ();
+                    return this.GoLeft();
                 }
 
                 if ((node.IsAtom() && (node.literalText != null)) &&
                     ((node.literalText.Length > 0) && (node.InternalMark > 0)))
                 {
-                    this.CaptureUndo ();
+                    this.CaptureUndo();
                     if (node.InternalMark > 1)
                     {
-                        
+
                         if (node.literalText.Length > 2)
                         {
-                            node.literalText = node.literalText.Substring (0, node.InternalMark - 1) +
-                                               node.literalText.Substring (node.InternalMark, node.literalText.Length - node.InternalMark);
-                            node.InternalMark = node.InternalMark - 1;
+                            if (node.InternalMark == node.literalText.Length)
+                            {
+                                node.literalText = node.literalText.Substring(0, node.InternalMark - 1) +
+                                               node.literalText.Substring(node.InternalMark, node.literalText.Length - node.InternalMark);
+                            }
+                            else
+                            {
+                                node.literalText = node.literalText.Substring(0, node.InternalMark - 1) +
+                                               node.literalText.Substring(node.InternalMark, node.literalText.Length - node.InternalMark);
+                                node.InternalMark = node.InternalMark - 1;
+                            }
                         }
                         else
                         {
-                            node.literalText = node.literalText.Substring (0, node.InternalMark - 1);
-                            node.InternalMark = node.InternalMark - 1;
+                            if (node.InternalMark == node.literalText.Length)
+                            {
+                                node.literalText = node.literalText.Substring(0, node.InternalMark - 1);
+                            }
+                            else
+                            {
+                                node.literalText = node.literalText.Substring(0, node.InternalMark - 1);
+                                node.InternalMark = node.InternalMark - 1;
+                            }
                         }
                     }
                     else
                     {
                         if (node.literalText.Length > 1)
                         {
-                            node.literalText = node.literalText.Substring (1, node.literalText.Length - 1);
+                            node.literalText = node.literalText.Substring(1, node.literalText.Length - 1);
                             node.InternalMark = node.InternalMark - 1;
                         }
                         else
                         {
-                            this.SelectNeighbor (node);
-                            this.Tear (node);
+                            this.SelectNeighbor(node);
+                            this.Tear(node);
                             return true;
                         }
                         node.InternalMark = 0;
@@ -3707,7 +3722,7 @@ namespace Facade
                 {
                     if (node.prevSibling != null)
                     {
-                        if (this.IsContainer (node.prevSibling))
+                        if (this.IsContainer(node.prevSibling))
                         {
                             this.multiSelectNode = node.prevSibling;
                             this.currentCaret = 1;
@@ -3719,7 +3734,7 @@ namespace Facade
                     }
                     else if ((node.parent_ != null) && node.parent_.skip)
                     {
-                        if ((node.parent_.parent_ != null) && this.IsContainer (node.parent_.parent_))
+                        if ((node.parent_.parent_ != null) && this.IsContainer(node.parent_.parent_))
                         {
                             this.multiSelectNode = node.parent_.parent_;
                             this.currentCaret = 1;
@@ -3729,7 +3744,7 @@ namespace Facade
                             return true;
                         }
                     }
-                    else if (this.IsContainer (node.parent_))
+                    else if (this.IsContainer(node.parent_))
                     {
                         this.multiSelectNode = node.parent_;
                         this.currentCaret = 1;
@@ -3739,69 +3754,69 @@ namespace Facade
                         return true;
                     }
                 }
-                else if (node.IsAppend && this.IsContainer (node))
+                else if (node.IsAppend && this.IsContainer(node))
                 {
                     this.multiSelectNode = node;
                     this.currentCaret = 1;
-                    this.SelectNode (node, false);
+                    this.SelectNode(node, false);
                     this.hasSelection = true;
                     return true;
                 }
-                
+
                 if (node.IsAppend)
                 {
-                    if (!this.CheckNode (node))
+                    if (!this.CheckNode(node))
                     {
                         return false;
                     }
-                    
-                    this.CaptureUndo ();
-                    this.SelectNeighbor (node);
-                    this.Tear (node);
-                    
+
+                    this.CaptureUndo();
+                    this.SelectNeighbor(node);
+                    this.Tear(node);
+
                     return true;
                 }
                 if (node.prevSibling != null)
                 {
-                    if (!this.CheckNode (node.prevSibling))
+                    if (!this.CheckNode(node.prevSibling))
                     {
                         return false;
                     }
-                    this.SelectNode (node.prevSibling, true);
-                    return this.Back ();
+                    this.SelectNode(node.prevSibling, true);
+                    return this.Back();
                 }
-                
-                if (this.GoLeft () && node.skip)
+
+                if (this.GoLeft() && node.skip)
                 {
-                    return this.GoLeft ();
+                    return this.GoLeft();
                 }
                 return false;
             }
             catch
             {
             }
-            
+
             return false;
         }
         //
-        public void SetClientHeight (int h)
+        public void SetClientHeight(int h)
         {
             this.clientRect.Height = h;
         }
         //
-        public bool DoDelete ()
+        public bool DoDelete()
         {
             bool r = false;
             try
             {
                 this.CanUndo = true;
-                Node cur = this.GetCurrentlySelectedNode ();
-                
+                Node cur = this.GetCurrentlySelectedNode();
+
                 if (this.HasSelection)
                 {
                     return DeleteSelection();
                 }
-                
+
                 // no selection
                 if (cur.InternalMark == 0)
                 {
@@ -3816,13 +3831,13 @@ namespace Facade
                              ((cur.parent_.parent_.nextSibling == null) &&
                               (cur.parent_.parent_.prevSibling != null))))
                         {
-                            return this.Back ();
+                            return this.Back();
                         }
                     }
                     catch
                     {
                     }
-                    if (this.IsContainer (cur))
+                    if (this.IsContainer(cur))
                     {
                         this.multiSelectNode = cur;
                         this.currentCaret = 1;
@@ -3830,57 +3845,57 @@ namespace Facade
                         return true;
                     }
                 }
-                else if ((cur.IsAppend && (cur.nextSibling != null)) && this.IsContainer (cur.nextSibling))
+                else if ((cur.IsAppend && (cur.nextSibling != null)) && this.IsContainer(cur.nextSibling))
                 {
                     this.multiSelectNode = cur.nextSibling;
                     this.currentCaret = 1;
                     this.hasSelection = true;
-                    this.SelectNode (cur.nextSibling, false);
+                    this.SelectNode(cur.nextSibling, false);
                     this.hasSelection = true;
                     return true;
                 }
-                
-                if (!this.CheckNode (cur))
+
+                if (!this.CheckNode(cur))
                 {
                     return false;
                 }
-                if (this.DeleteCell (cur))
+                if (this.DeleteCell(cur))
                 {
                     return true;
                 }
-                
+
                 if ((cur.IsAtom() && (cur.literalText != null)) && (cur.literalText.Length > 0))
                 {
-                    this.CaptureUndo ();
+                    this.CaptureUndo();
                     if (cur.InternalMark < cur.LiteralLength)
                     {
                         if ((cur.InternalMark == 0) && (cur.literalText.Length == 1))
                         {
-                            this.SelectNeighbor (cur);
-                            this.Tear (cur);
-                            
+                            this.SelectNeighbor(cur);
+                            this.Tear(cur);
+
                             r = true;
 
                             return r;
                         }
-                        
+
                         if (cur.InternalMark > 0)
                         {
-                            cur.literalText = cur.literalText.Substring (0, cur.InternalMark) +
-                                               cur.literalText.Substring (cur.InternalMark + 1,
+                            cur.literalText = cur.literalText.Substring(0, cur.InternalMark) +
+                                               cur.literalText.Substring(cur.InternalMark + 1,
                                                                            (cur.literalText.Length - cur.InternalMark) - 1);
                         }
                         else
                         {
-                            cur.literalText = cur.literalText.Substring (1, cur.literalText.Length - 1);
+                            cur.literalText = cur.literalText.Substring(1, cur.literalText.Length - 1);
                         }
-                        
+
                         r = true;
                         if ((cur.literalText.Length != 0) && (cur.InternalMark == cur.LiteralLength))
                         {
                             if (cur.nextSibling != null)
                             {
-                                this.SelectNode (cur.nextSibling, false);
+                                this.SelectNode(cur.nextSibling, false);
                                 r = true;
                             }
                             else
@@ -3892,13 +3907,13 @@ namespace Facade
                     }
                     if (cur.nextSibling != null)
                     {
-                        this.SelectNode (cur.nextSibling, false);
-                        return this.DoDelete ();
+                        this.SelectNode(cur.nextSibling, false);
+                        return this.DoDelete();
                     }
 
                     return r;
                 }
-                this.CaptureUndo ();
+                this.CaptureUndo();
                 if (cur.IsAppend)
                 {
                     if (cur.nextSibling != null)
@@ -3908,18 +3923,18 @@ namespace Facade
                         {
                             return r;
                         }
-                        this.SelectNode (cur.nextSibling, false);
-                        
-                        return this.DoDelete ();
+                        this.SelectNode(cur.nextSibling, false);
+
+                        return this.DoDelete();
                     }
-                    
+
                     return r;
                 }
-                
-                this.SelectNeighbor (cur);
-                r = this.Tear (cur);
-           
-                
+
+                this.SelectNeighbor(cur);
+                r = this.Tear(cur);
+
+
                 r = true;
             }
             catch
@@ -3977,7 +3992,7 @@ namespace Facade
             {
                 notOk = true;
             }
-            
+
             if (notOk)
             {
                 try
@@ -4022,21 +4037,21 @@ namespace Facade
             return false;
         }
         //
-        private void SelectNeighbor (Node node)
+        private void SelectNeighbor(Node node)
         {
             try
             {
                 if (node.nextSibling != null)
                 {
-                    this.SelectNode (node.nextSibling, false);
+                    this.SelectNode(node.nextSibling, false);
                 }
                 else if (node.prevSibling != null)
                 {
-                    this.SelectNode (node.prevSibling, true);
+                    this.SelectNode(node.prevSibling, true);
                 }
                 else if (node.parent_ != null)
                 {
-                    this.SelectNode (node.parent_, false);
+                    this.SelectNode(node.parent_, false);
                 }
             }
             catch
@@ -4044,7 +4059,7 @@ namespace Facade
             }
         }
         //
-        private bool CheckNode (Node node)
+        private bool CheckNode(Node node)
         {
             try
             {
@@ -4052,9 +4067,9 @@ namespace Facade
                 {
                     return false;
                 }
-                
-                if ( (node.type_.type == ElementType.Mtr) ||
-                     (node.type_.type == ElementType.Mtd)) 
+
+                if ((node.type_.type == ElementType.Mtr) ||
+                     (node.type_.type == ElementType.Mtd))
                 {
                     return false;
                 }
@@ -4062,7 +4077,7 @@ namespace Facade
                 {
                     return false;
                 }
-                
+
                 if ((node.level == 0))
                 {
                     return false;
@@ -4075,7 +4090,7 @@ namespace Facade
             }
         }
         //
-        private Node TearSelection (Selection collection, ref int updatedMark)
+        private Node TearSelection(Selection collection, ref int updatedMark)
         {
             Node newRow = null;
             Node c = null;
@@ -4156,8 +4171,8 @@ namespace Facade
                         }
                     }
                     Node cur = null;
-                    collection.nodesList.Reset ();
-                    for (cur = collection.nodesList.Next (); cur != null; cur = collection.nodesList.Next ())
+                    collection.nodesList.Reset();
+                    for (cur = collection.nodesList.Next(); cur != null; cur = collection.nodesList.Next())
                     {
                         if (((cur == collection.First) || ((cur == collection.Last) && (collection.literalLength > 0))) &&
                             (cur.IsAtom()))
@@ -4185,21 +4200,21 @@ namespace Facade
                                     }
                                     if ((mark == 0) && (len == cur.LiteralLength))
                                     {
-                                        this.Tear (cur);
+                                        this.Tear(cur);
                                     }
                                     else if ((mark == 0) && (len < cur.LiteralLength))
                                     {
-                                        cur.literalText = cur.literalText.Substring (len, cur.LiteralLength - len);
+                                        cur.literalText = cur.literalText.Substring(len, cur.LiteralLength - len);
                                         cur.LiteralStart = 0;
                                     }
                                     else if ((mark > 0) && (len == cur.LiteralLength))
                                     {
-                                        cur.literalText = cur.literalText.Substring (0, mark);
+                                        cur.literalText = cur.literalText.Substring(0, mark);
                                     }
                                     else
                                     {
-                                        cur.literalText = cur.literalText.Substring (0, mark) +
-                                                           cur.literalText.Substring (len, cur.LiteralLength - len);
+                                        cur.literalText = cur.literalText.Substring(0, mark) +
+                                                           cur.literalText.Substring(len, cur.LiteralLength - len);
                                     }
                                 }
                                 catch
@@ -4213,7 +4228,7 @@ namespace Facade
                             {
                                 if ((cur != collection.Last) || ((cur == collection.Last) && (collection.literalLength == cur.LiteralLength)))
                                 {
-                                    this.Tear (cur, true, true, ref newRow);
+                                    this.Tear(cur, true, true, ref newRow);
                                 }
                             }
                             catch
@@ -4221,7 +4236,7 @@ namespace Facade
                             }
                         }
                     }
-                    collection.nodesList.Reset ();
+                    collection.nodesList.Reset();
                 }
             }
             catch
@@ -4315,18 +4330,18 @@ namespace Facade
             return c;
         }
         //
-        private bool Tear (Node node)
+        private bool Tear(Node node)
         {
-            return this.Tear (node, true, true);
+            return this.Tear(node, true, true);
         }
         //
-        private bool Tear (Node node, bool bCheck, bool bSelect)
+        private bool Tear(Node node, bool bCheck, bool bSelect)
         {
             Node newRow = null;
-            return this.Tear (node, bCheck, bSelect, ref newRow);
+            return this.Tear(node, bCheck, bSelect, ref newRow);
         }
         //
-        private bool Tear (Node node, bool needCheck, bool needSelect, ref Node newRow)
+        private bool Tear(Node node, bool needCheck, bool needSelect, ref Node newRow)
         {
             bool r;
             try
@@ -4335,18 +4350,18 @@ namespace Facade
                 {
                     if (node == this.selectedNode)
                     {
-                        this.SelectNeighbor (node);
+                        this.SelectNeighbor(node);
                     }
                 }
                 catch
                 {
                 }
                 this.CanUndo = true;
-                if (needCheck && !this.CheckNode (node))
+                if (needCheck && !this.CheckNode(node))
                 {
                     return false;
                 }
-                
+
                 Node upper = node.upperNode;
                 Node lower = node.lowerNode;
                 Node next = node.nextSibling;
@@ -4360,7 +4375,7 @@ namespace Facade
                 {
                     lower.upperNode = null;
                 }
-                
+
                 if (prev == null)
                 {
                     if (next != null)
@@ -4383,28 +4398,28 @@ namespace Facade
                     prev.nextSibling = null;
                     par.lastChild = prev;
                 }
-                par.UpdateChildrenIndices ();
-                par.UpdateLevel ();
-                this.TagAsDeleted (node);
-                
+                par.UpdateChildrenIndices();
+                par.UpdateLevel();
+                this.TagAsDeleted(node);
+
                 if (((par.numChildren >= par.type_.minChilds) && (node.parent_.type_.type != ElementType.Mmultiscripts)))
                 {
                     return true;
                 }
-                
-                Node row = this.CreateRow ();
+
+                Node row = this.CreateRow();
                 row.literalText = "";
                 bool ok = false;
                 if (next != null)
                 {
-                    ok = next.PrependNode (row);
+                    ok = next.PrependNode(row);
                     if (needSelect)
                     {
                         this.SelectNode(row, false);
                         try
                         {
                             newRow = this.selectedNode;
-                    }
+                        }
                         catch
                         {
                         }
@@ -4425,7 +4440,7 @@ namespace Facade
                         }
                     }
                 }
-                
+
                 r = ok;
             }
             catch
@@ -4435,17 +4450,17 @@ namespace Facade
             return r;
         }
         //
-        private void TagAsDeleted (Node node)
+        private void TagAsDeleted(Node node)
         {
-            if (node.HasChildren ())
+            if (node.HasChildren())
             {
-                NodesList list = node.GetChildrenNodes ();
+                NodesList list = node.GetChildrenNodes();
                 for (int i = 0; i < list.Count; i++)
                 {
-                    Node n = list.Get (i);
+                    Node n = list.Get(i);
                     if (n != null)
                     {
-                        this.TagAsDeleted (n);
+                        this.TagAsDeleted(n);
                     }
                 }
             }
@@ -4453,36 +4468,36 @@ namespace Facade
             node = null;
         }
         //
-        private bool CreateTopLevelTable ()
+        private bool CreateTopLevelTable()
         {
             try
             {
                 if (!this.IsMultiline)
                 {
-                    Node table = this.MakeNode ("mtable");
-                    Node row = this.MakeNode ("mtr");
-                    Node cell = this.MakeNode ("mtd");
-                    table.AdoptChild (row);
-                    row.AdoptChild (cell);
+                    Node table = this.MakeNode("mtable");
+                    Node row = this.MakeNode("mtr");
+                    Node cell = this.MakeNode("mtd");
+                    table.AdoptChild(row);
+                    row.AdoptChild(cell);
 
                     if (table.attrs == null)
                     {
-                        table.attrs = new AttributeList ();
+                        table.attrs = new AttributeList();
                     }
-                    table.attrs.Add ("columnalign", "left");
-                    table.attrs.Add ("class", "nugentoplevel");
+                    table.attrs.Add("columnalign", "left");
+                    table.attrs.Add("class", "nugentoplevel");
 
                     Node cur = this.selectedNode;
                     int curCaret = this.selectedNode.InternalMark;
-                    this.rootNode_.firstChild.PrependNode (table);
+                    this.rootNode_.firstChild.PrependNode(table);
                     while (table.nextSibling != null)
                     {
-                        this.ReParent (table.nextSibling, cell);
+                        this.ReParent(table.nextSibling, cell);
                     }
-                    this.rootNode_.UpdateLevel ();
+                    this.rootNode_.UpdateLevel();
                     if ((this.selectedNode != cur) || (this.selectedNode.InternalMark != curCaret))
                     {
-                        this.SelectNode (cur, false);
+                        this.SelectNode(cur, false);
                         cur.InternalMark = curCaret;
                     }
                     if (this.IsMultiline)
@@ -4497,7 +4512,7 @@ namespace Facade
             return false;
         }
         //
-        private bool ReParent (Node node, Node newParent)
+        private bool ReParent(Node node, Node newParent)
         {
             try
             {
@@ -4532,12 +4547,12 @@ namespace Facade
                     oldParent.numChildren--;
                 }
                 node.level = oldParent.level + 1;
-                oldParent.UpdateChildrenIndices ();
-                oldParent.UpdateLevel ();
+                oldParent.UpdateChildrenIndices();
+                oldParent.UpdateLevel();
                 node.prevSibling = null;
                 node.nextSibling = null;
                 node.parent_ = null;
-                newParent.AdoptChild (node);
+                newParent.AdoptChild(node);
                 return true;
             }
             catch
@@ -4546,12 +4561,12 @@ namespace Facade
             return false;
         }
         //
-        public void SetupPainting (Graphics pGraphics, bool bAntiAlias, bool b256ColorMode)
+        public void SetupPainting(Graphics pGraphics, bool bAntiAlias, bool b256ColorMode)
         {
-            this.painter_.SetupPainting (pGraphics, bAntiAlias);
+            this.painter_.SetupPainting(pGraphics, bAntiAlias);
         }
         //
-        private bool IsToplevelRowCell (Node node)
+        private bool IsToplevelRowCell(Node node)
         {
             try
             {
@@ -4576,7 +4591,7 @@ namespace Facade
             return false;
         }
         //
-        public Node CarriageReturn (Node node, ref bool wasSplit)
+        public Node CarriageReturn(Node node, ref bool wasSplit)
         {
             if ((((node.literalText == null) || (node.InternalMark <= 0))) ||
                 (node.InternalMark >= node.LiteralLength))
@@ -4587,51 +4602,51 @@ namespace Facade
                 ((node.parent_.numChildren == node.parent_.type_.maxChilds) ||
                  (node.parent_.type_.type == ElementType.Mmultiscripts)))
             {
-                node = this.WrapInRowInplace (node);
+                node = this.WrapInRowInplace(node);
             }
-            Node newNode = new Node (node.xmlTagName);
-            node.CopyProperties (newNode);
+            Node newNode = new Node(node.xmlTagName);
+            node.CopyProperties(newNode);
             newNode.InternalMark = 0;
-            newNode.literalText = node.literalText.Substring (node.InternalMark, node.literalText.Length - node.InternalMark);
-            node.literalText = node.literalText.Substring (0, node.InternalMark);
-            node.AppendNode (newNode);
-            node.parent_.UpdateChildrenIndices ();
-            node.parent_.UpdateLevel ();
+            newNode.literalText = node.literalText.Substring(node.InternalMark, node.literalText.Length - node.InternalMark);
+            node.literalText = node.literalText.Substring(0, node.InternalMark);
+            node.AppendNode(newNode);
+            node.parent_.UpdateChildrenIndices();
+            node.parent_.UpdateLevel();
             newNode.InternalMark = 0;
             wasSplit = true;
             return newNode;
         }
         //
-        private Node WrapInRowInplace (Node node)
+        private Node WrapInRowInplace(Node node)
         {
-            Node n = new Node ();
-            node.CopyTo (n);
+            Node n = new Node();
+            node.CopyTo(n);
             n.IsAppend = node.IsAppend;
             n.InternalMark = node.InternalMark;
-            
-            Node row = this.CreateRow ();
-            node.parent_.ReplaceChild (node, row);
-            row.AdoptChild (n);
+
+            Node row = this.CreateRow();
+            node.parent_.ReplaceChild(node, row);
+            row.AdoptChild(n);
             return n;
         }
         //
-        public void SetOrigin (int oX, int oY)
+        public void SetOrigin(int oX, int oY)
         {
             this.oX = oX;
             this.oY = oY;
-            this.painter_.SetOrigin (oX, oY);
+            this.painter_.SetOrigin(oX, oY);
         }
         //
-        public string SaveToXML (bool bStripNamespace)
+        public string SaveToXML(bool bStripNamespace)
         {
-            string xml = this.SaveToXML ();
+            string xml = this.SaveToXML();
             if (bStripNamespace)
             {
                 try
                 {
                     int indexOf = 0;
                     int endIndex = 0;
-                    indexOf = xml.IndexOf ("xmlns=", 0, xml.Length);
+                    indexOf = xml.IndexOf("xmlns=", 0, xml.Length);
                     if (indexOf <= 0)
                     {
                         return xml;
@@ -4647,13 +4662,13 @@ namespace Facade
                     }
                     if (nspace.Length > 0)
                     {
-                        endIndex = xml.IndexOf (nspace, indexOf + 7, (xml.Length - indexOf) - 7);
+                        endIndex = xml.IndexOf(nspace, indexOf + 7, (xml.Length - indexOf) - 7);
                         if (endIndex <= indexOf)
                         {
                             return xml;
                         }
                         endIndex++;
-                        xml = xml.Substring (0, indexOf) + xml.Substring (endIndex, xml.Length - endIndex);
+                        xml = xml.Substring(0, indexOf) + xml.Substring(endIndex, xml.Length - endIndex);
                     }
                 }
                 catch
@@ -4663,12 +4678,12 @@ namespace Facade
             return xml;
         }
         //
-        public string SaveToXML ()
+        public string SaveToXML()
         {
             try
             {
-                XmlDocument doc = new XmlDocument ();
-                this.rootNode_.SaveToXml (doc, null, "UTF-8");
+                XmlDocument doc = new XmlDocument();
+                this.rootNode_.SaveToXml(doc, null, "UTF-8");
                 return doc.DocumentElement.OuterXml;
             }
             catch
@@ -4677,17 +4692,17 @@ namespace Facade
             }
         }
         //
-        public void PropogateEntityManager ()
+        public void PropogateEntityManager()
         {
             if (this.entityManager != null)
             {
-                this.painter_.SetEntityManager (this.entityManager);
+                this.painter_.SetEntityManager(this.entityManager);
             }
         }
         //
-        public string CaptureForClipboard ()
+        public string CaptureForClipboard()
         {
-            XmlDocument doc = new XmlDocument ();
+            XmlDocument doc = new XmlDocument();
             bool ok = false;
             string r = "";
             try
@@ -4695,10 +4710,10 @@ namespace Facade
                 if ((this.selectedNode != null) && this.HasSelection)
                 {
                     {
-                        Selection sel = this.CaptureSelection ();
+                        Selection sel = this.CaptureSelection();
                         if (sel != null)
                         {
-                            ok = this.SaveToXml (doc, sel);
+                            ok = this.SaveToXml(doc, sel);
                         }
                         else
                         {
@@ -4729,7 +4744,7 @@ namespace Facade
             return r;
         }
         //
-        private bool SaveToXml (XmlDocument doc, Selection sel)
+        private bool SaveToXml(XmlDocument doc, Selection sel)
         {
             bool r = false;
             XmlNode root = null;
@@ -4770,12 +4785,12 @@ namespace Facade
             return r;
         }
         //
-        public void SetEntityManager (EntityManager eman)
+        public void SetEntityManager(EntityManager eman)
         {
             this.entityManager = eman;
         }
         //
-        private Node MakeNode (string name)
+        private Node MakeNode(string name)
         {
             Node node = null;
             try
@@ -4792,12 +4807,12 @@ namespace Facade
             return node;
         }
         // 
-        private Node CreateRow ()
+        private Node CreateRow()
         {
-            return this.MakeNode ("mrow");
+            return this.MakeNode("mrow");
         }
         //
-        public bool MoveToSelected (ref int nDiff_X, ref int nDiff_Y)
+        public bool MoveToSelected(ref int nDiff_X, ref int nDiff_Y)
         {
             nDiff_X = 0;
             nDiff_Y = 0;
@@ -4807,7 +4822,7 @@ namespace Facade
                 if (((n != null) && n.isVisible) && !n.tagDeleted)
                 {
                     Rectangle rectangle = this.bounds;
-                    n.PropogateYOffset ();
+                    n.PropogateYOffset();
                     if (n != null)
                     {
                         if ((n.box.Y <= rectangle.Y) ||
@@ -4833,7 +4848,7 @@ namespace Facade
                                 nDiff_Y = (n.box.Y + n.box.Height) - (rectangle.Y + rectangle.Height);
                             }
                         }
-                                                
+
                         if ((n.box.X <= rectangle.X) ||
                             ((n.box.X + n.box.Width) >= ((rectangle.X + rectangle.Width) - 1)))
                         {
@@ -4870,7 +4885,7 @@ namespace Facade
             return false;
         }
         //
-        private bool NotInSameContainer (Node node, Node node2)
+        private bool NotInSameContainer(Node node, Node node2)
         {
             if ((((node.parent_ == null) || (node2.parent_ == null)) || (node.parent_ != node2.parent_)) ||
                 (((((node.parent_.type_.type != ElementType.Math) &&
@@ -4886,12 +4901,12 @@ namespace Facade
             return true;
         }
         //
-        public void SetTypes (Types typeCollection)
+        public void SetTypes(Types typeCollection)
         {
             this.types_ = typeCollection;
         }
         //
-        private bool IsMathML (Node node)
+        private bool IsMathML(Node node)
         {
             if (((node == null)) ||
                 (((((node.type_.type != ElementType.Mrow) &&
@@ -4911,7 +4926,7 @@ namespace Facade
             return true;
         }
         //
-        public Node getRoot ()
+        public Node getRoot()
         {
             Node r = null;
             try
@@ -4927,19 +4942,19 @@ namespace Facade
             return r;
         }
         //
-        private XmlNode LoadXml (string xml, XmlDocument doc)
+        private XmlNode LoadXml(string xml, XmlDocument doc)
         {
             XmlNode root = null;
             string entities = "";
             try
             {
-                xml = xml.Trim ();
+                xml = xml.Trim();
                 if (((xml != null) && (xml.Length > 0)) && ((xml[0] == '<') && (xml[xml.Length - 1] == '>')))
                 {
                     try
                     {
-                        entities = this.entityManager.GenerateXMLEntities (xml) + xml;
-                        doc.LoadXml (entities);
+                        entities = this.entityManager.GenerateXMLEntities(xml) + xml;
+                        doc.LoadXml(entities);
                         root = doc.DocumentElement;
                     }
                     catch
@@ -4952,17 +4967,17 @@ namespace Facade
             }
             catch (Exception ex)
             {
-                this.InvalidXML (this, new InvalidXMLArgs (ex.Message, "", this.schema.LineNumber, this.schema.LinePos));
+                this.InvalidXML(this, new InvalidXMLArgs(ex.Message, "", this.schema.LineNumber, this.schema.LinePos));
                 return null;
             }
         }
         //
-        private NodeClass GetNodeClass (Node selNode)
+        private NodeClass GetNodeClass(Node selNode)
         {
             NodeClass result = NodeClass.unknown;
             try
             {
-                if (this.IsToplevelRowCell (selNode))
+                if (this.IsToplevelRowCell(selNode))
                 {
                     return NodeClass.mcell;
                 }
@@ -4977,18 +4992,18 @@ namespace Facade
             return result;
         }
         //
-        public int WidthToMark (Node node, int mark)
+        public int WidthToMark(Node node, int mark)
         {
             int w = 0;
             if ((node.literalText != null) && (mark > 0))
             {
                 StyleAttributes s = node.style_;
-                w = this.painter_.MeasureWidth (node, s, node.literalText.Substring (0, mark));
+                w = this.painter_.MeasureWidth(node, s, node.literalText.Substring(0, mark));
                 try
                 {
                     if ((node.type_ != null) && (node.type_.type == ElementType.Ms))
                     {
-                        w += ((Box_Ms) node.box).leftQuoteWidth;
+                        w += ((Box_Ms)node.box).leftQuoteWidth;
                     }
                 }
                 catch
@@ -4998,29 +5013,29 @@ namespace Facade
             return w;
         }
         //
-        public Rectangle rectangleToUpdate ()
+        public Rectangle rectangleToUpdate()
         {
-            return new Rectangle (0, 0, this.clientRect.Width, this.clientRect.Height);
+            return new Rectangle(0, 0, this.clientRect.Width, this.clientRect.Height);
         }
         //
-        public bool Validate (string sXML)
+        public bool Validate(string sXML)
         {
             bool result = true;
-            
+
             try
             {
                 if (this.schema == null)
                 {
-                    this.schema = new Schema (this.mathmlSchema);
+                    this.schema = new Schema(this.mathmlSchema);
                 }
                 if (this.schema != null)
                 {
-                    result = this.schema.Validate (sXML);
+                    result = this.schema.Validate(sXML);
                 }
                 if ((this.schema != null) && this.schema.IsValid)
                 {
-                    this.InvalidXML (this,
-                             new InvalidXMLArgs (this.schema.Message, "", this.schema.LineNumber, this.schema.LinePos));
+                    this.InvalidXML(this,
+                             new InvalidXMLArgs(this.schema.Message, "", this.schema.LineNumber, this.schema.LinePos));
                     result = false;
                 }
             }
@@ -5031,18 +5046,18 @@ namespace Facade
             return result;
         }
         //
-        public bool LoadXML (string sXML)
+        public bool LoadXML(string sXML)
         {
-            this.clear ();
+            this.clear();
             bool result = true;
             XmlTextReader reader = null;
             this.CanUndo = false;
             try
             {
-                reader = new XmlTextReader (sXML, XmlNodeType.Element, new XmlParserContext (null, new XmlNamespaceManager (new NameTable ()), null, XmlSpace.None));
-                this.LoadXML (reader);
+                reader = new XmlTextReader(sXML, XmlNodeType.Element, new XmlParserContext(null, new XmlNamespaceManager(new NameTable()), null, XmlSpace.None));
+                this.LoadXML(reader);
             }
-            catch (Exception )
+            catch (Exception)
             {
                 result = false;
             }
@@ -5050,48 +5065,48 @@ namespace Facade
             {
                 if (reader != null)
                 {
-                    reader.Close ();
+                    reader.Close();
                 }
             }
             return result;
         }
         //
-        private void LoadXML (XmlTextReader xr)
+        private void LoadXML(XmlTextReader xr)
         {
             bool bad = false;
             Exception exception = null;
             try
             {
-                XmlDocument doc = new XmlDocument ();
+                XmlDocument doc = new XmlDocument();
                 doc.PreserveWhitespace = true;
                 string finalXML = "";
                 xr.WhitespaceHandling = WhitespaceHandling.All;
-                xr.MoveToContent ();
-                string xml = xr.ReadOuterXml ();
+                xr.MoveToContent();
+                string xml = xr.ReadOuterXml();
                 string converted = "";
-                if (!this.entityManager.TryConvertCommonOperators (xml, ref converted))
+                if (!this.entityManager.TryConvertCommonOperators(xml, ref converted))
                 {
                     converted = xml;
                 }
-                finalXML = this.entityManager.GenerateXMLEntities (converted) + converted;
-                doc.LoadXml (finalXML);
+                finalXML = this.entityManager.GenerateXMLEntities(converted) + converted;
+                doc.LoadXml(finalXML);
                 XmlNode root = doc.DocumentElement;
-                
-                this.EndowWithRows (doc, doc.DocumentElement);
-                this.rootNode_ = new Node ();
+
+                this.EndowWithRows(doc, doc.DocumentElement);
+                this.rootNode_ = new Node();
                 if (root != null)
                 {
                     this.rootNode_.xmlTagName = root.LocalName;
-                    this.rootNode_.Parse (root, this.types_, this.entityManager, true, null,false);
+                    this.rootNode_.Parse(root, this.types_, this.entityManager, true, null, false);
                 }
                 Node select = null;
-               
+
                 if (this.rootNode_.xmlTagName == "math")
                 {
                     select = this.rootNode_;
                     try
                     {
-                        if ((select != null) && select.HasChildren ())
+                        if ((select != null) && select.HasChildren())
                         {
                             select = select.firstChild;
                             if (((select.type_.type == ElementType.Mtable) && (select.nextSibling == null)) &&
@@ -5114,9 +5129,9 @@ namespace Facade
                         {
                             try
                             {
-                                Node r = this.MakeNode ("mrow");
-                                this.rootNode_.AdoptChild (r);
-                                this.rootNode_.UpdateLevel ();
+                                Node r = this.MakeNode("mrow");
+                                this.rootNode_.AdoptChild(r);
+                                this.rootNode_.UpdateLevel();
                                 select = r;
                             }
                             catch
@@ -5128,40 +5143,40 @@ namespace Facade
                     {
                     }
                 }
-                
+
                 if (select == null)
                 {
                     select = this.rootNode_;
                 }
-                this.SelectNode (select, false);
+                this.SelectNode(select, false);
             }
             catch (Exception ex)
             {
                 bad = true;
-                exception = new Exception (ex.Message, ex.InnerException);
+                exception = new Exception(ex.Message, ex.InnerException);
             }
             this.CanUndo = false;
-            this.undo.Clear ();
-            this.redo.Clear ();
+            this.undo.Clear();
+            this.redo.Clear();
             if (bad && (exception != null))
             {
                 throw exception;
             }
         }
         //
-        private void EndowWithRows (XmlDocument xmlDoc, XmlNode xmlNode)
+        private void EndowWithRows(XmlDocument xmlDoc, XmlNode xmlNode)
         {
             if (xmlNode.HasChildNodes)
             {
                 XmlNodeList list = xmlNode.ChildNodes;
                 for (int i = 0; i < list.Count; i++)
                 {
-                    this.EndowMathWithRow (xmlDoc, list.Item (i));
+                    this.EndowMathWithRow(xmlDoc, list.Item(i));
                 }
             }
         }
         //
-        private void EndowMathWithRow (XmlDocument xmlDoc, XmlNode xmlNode)
+        private void EndowMathWithRow(XmlDocument xmlDoc, XmlNode xmlNode)
         {
             if ((xmlNode.NodeType == XmlNodeType.Element) && (xmlNode.LocalName == "math"))
             {
@@ -5169,10 +5184,10 @@ namespace Facade
                 {
                     if (xmlNode.ChildNodes.Count == 0)
                     {
-                        XmlNode n = xmlDoc.CreateNode (XmlNodeType.Element, "mrow", "http://www.w3.org/1998/Math/MathML");
+                        XmlNode n = xmlDoc.CreateNode(XmlNodeType.Element, "mrow", "http://www.w3.org/1998/Math/MathML");
                         if (xmlNode != null)
                         {
-                            xmlNode.AppendChild (n);
+                            xmlNode.AppendChild(n);
                         }
                     }
                 }
@@ -5189,15 +5204,15 @@ namespace Facade
             XmlNodeList list = xmlNode.ChildNodes;
             for (int i = 0; i < list.Count; i++)
             {
-                this.EndowMathWithRow (xmlDoc, list.Item (i));
+                this.EndowMathWithRow(xmlDoc, list.Item(i));
             }
         }
-        public void SavePure (string filename)
+        public void SavePure(string filename)
         {
             bool ok = true;
 
-            XmlDocument doc = new XmlDocument ();
-            
+            XmlDocument doc = new XmlDocument();
+
             try
             {
                 this.rootNode_.SavePure(doc, null, "UTF-8");
@@ -5206,13 +5221,13 @@ namespace Facade
             {
                 ok = false;
             }
-            
-            
+
+
             if (ok)
             {
                 try
                 {
-                    doc.Save (filename);
+                    doc.Save(filename);
                 }
                 catch
                 {
@@ -5221,27 +5236,27 @@ namespace Facade
             }
         }
         //
-        public void Save (string filename)
+        public void Save(string filename)
         {
             bool ok = true;
 
-            XmlDocument doc = new XmlDocument ();
-            
+            XmlDocument doc = new XmlDocument();
+
             try
             {
-                this.rootNode_.SaveToXml (doc, null, "UTF-8");
+                this.rootNode_.SaveToXml(doc, null, "UTF-8");
             }
             catch (Exception)
             {
                 ok = false;
             }
-            
-            
+
+
             if (ok)
             {
                 try
                 {
-                    doc.Save (filename);
+                    doc.Save(filename);
                 }
                 catch
                 {
@@ -5250,7 +5265,7 @@ namespace Facade
             }
         }
         //
-        public Bitmap Export2Image (PixelFormat pixFormat, float fontSize, int nResolution, bool antiAliasing, ref int BaseLine)
+        public Bitmap Export2Image(PixelFormat pixFormat, float fontSize, int nResolution, bool antiAliasing, ref int BaseLine)
         {
             int width = 0;
             int height = 0;
@@ -5277,36 +5292,36 @@ namespace Facade
                 {
                     width = this.rootNode_.box.Width + 10;
                     height = this.rootNode_.box.Height + 10;
-                    this.SetOrigin (5, 5);
-                    
-                    bitmap = new Bitmap (width, height, pixFormat);
-                    bitmap.SetResolution ((float) nResolution, (float) nResolution);
-                    
-                    Graphics graphics = Graphics.FromImage (bitmap);
-                    graphics.Clear (Color.White);
+                    this.SetOrigin(5, 5);
 
-                    this.painter_.SetupPainting (graphics, antiAliasing);
-                    this.painter_.SetFontSize (fontSize);
-                    
-                    this.MeasureAll ();
-                    
+                    bitmap = new Bitmap(width, height, pixFormat);
+                    bitmap.SetResolution((float)nResolution, (float)nResolution);
+
+                    Graphics graphics = Graphics.FromImage(bitmap);
+                    graphics.Clear(Color.White);
+
+                    this.painter_.SetupPainting(graphics, antiAliasing);
+                    this.painter_.SetFontSize(fontSize);
+
+                    this.MeasureAll();
+
                     float med = 0f;
                     float thin = 0f;
                     float vvthin = 0f;
                     int medMargin = 0;
                     int thinMargin = 0;
                     int vvThinMargin = 0;
-                    
+
                     try
                     {
-                        med = this.painter_.CalcSpaceHeight (Rendering.Space.Medium, fontSize, "Times New Roman");
+                        med = this.painter_.CalcSpaceHeight(Rendering.Space.Medium, fontSize, "Times New Roman");
                         med *= 0.9f;
-                        thin = this.painter_.CalcSpaceHeight (Rendering.Space.Thin, fontSize, "Times New Roman");
-                        vvthin = this.painter_.CalcSpaceHeight (Rendering.Space.VeryVeryThin, fontSize, "Times New Roman");
-                        medMargin = Convert.ToInt32 (Math.Round ((double) med));
-                        thinMargin = Convert.ToInt32 (Math.Round ((double) thin));
-                        vvThinMargin = Convert.ToInt32 (Math.Round ((double) vvthin));
-                        
+                        thin = this.painter_.CalcSpaceHeight(Rendering.Space.Thin, fontSize, "Times New Roman");
+                        vvthin = this.painter_.CalcSpaceHeight(Rendering.Space.VeryVeryThin, fontSize, "Times New Roman");
+                        medMargin = Convert.ToInt32(Math.Round((double)med));
+                        thinMargin = Convert.ToInt32(Math.Round((double)thin));
+                        vvThinMargin = Convert.ToInt32(Math.Round((double)vvthin));
+
                     }
                     catch
                     {
@@ -5314,21 +5329,21 @@ namespace Facade
                     width = (this.rootNode_.box.Width + medMargin) + thinMargin;
                     height = this.rootNode_.box.Height + vvThinMargin + vvThinMargin;
                     BaseLine = this.rootNode_.box.Baseline + vvThinMargin;
-                    this.SetOrigin (medMargin, vvThinMargin);
-                    bitmap = new Bitmap (width, height, pixFormat);
-                    bitmap.SetResolution ((float) nResolution, (float) nResolution);
-                    graphics = Graphics.FromImage (bitmap);
-                    graphics.Clear (Color.White);
-                    this.painter_.SetupPainting (graphics, antiAliasing);
-                    this.painter_.SetFontSize (fontSize);
-                    this.MeasureAll ();
-                    this.DrawRoot (new Rectangle (0, 0, width, height));
+                    this.SetOrigin(medMargin, vvThinMargin);
+                    bitmap = new Bitmap(width, height, pixFormat);
+                    bitmap.SetResolution((float)nResolution, (float)nResolution);
+                    graphics = Graphics.FromImage(bitmap);
+                    graphics.Clear(Color.White);
+                    this.painter_.SetupPainting(graphics, antiAliasing);
+                    this.painter_.SetFontSize(fontSize);
+                    this.MeasureAll();
+                    this.DrawRoot(new Rectangle(0, 0, width, height));
                 }
                 catch
                 {
                 }
-                this.painter_.SetFontSize (this.FontSize);
-                this.SetOrigin (prevX, prevY);
+                this.painter_.SetFontSize(this.FontSize);
+                this.SetOrigin(prevX, prevY);
             }
             catch
             {
@@ -5336,17 +5351,17 @@ namespace Facade
             return bitmap;
         }
         //
-        public string ProcessEntities (string sSource)
+        public string ProcessEntities(string sSource)
         {
             string replaced = "";
-            if (this.entityManager.ReplaceEntities (sSource, ref replaced) && (replaced.Length > 0))
+            if (this.entityManager.ReplaceEntities(sSource, ref replaced) && (replaced.Length > 0))
             {
                 return replaced;
             }
             return sSource;
         }
         //
-        private void SelectTop ()
+        private void SelectTop()
         {
             try
             {
@@ -5355,7 +5370,7 @@ namespace Facade
                 {
                     Node sel = this.selectedNode;
                     bool d = true;
-                   
+
                     try
                     {
                         while (sel.parent_ != null)
@@ -5372,7 +5387,7 @@ namespace Facade
                     }
                     if (((sel == null) || (sel != this.rootNode_)) || !d)
                     {
-                        top = this.TopContainer ();
+                        top = this.TopContainer();
                     }
                     else
                     {
@@ -5383,7 +5398,7 @@ namespace Facade
                                  ((this.selectedNode.type_.type == ElementType.Mtable) &&
                                   (this.selectedNode.Class == "nugentoplevel"))))
                             {
-                                top = this.TopContainer ();
+                                top = this.TopContainer();
                             }
                             else if (this.selectedNode.type_.type == ElementType.Mtr)
                             {
@@ -5397,12 +5412,12 @@ namespace Facade
                                     }
                                     else
                                     {
-                                        top = this.WrapInMrow (first);
+                                        top = this.WrapInMrow(first);
                                     }
                                 }
                                 else
                                 {
-                                    top = this.TopContainer ();
+                                    top = this.TopContainer();
                                 }
                             }
                             else if (this.selectedNode.type_.type == ElementType.Mtd)
@@ -5413,7 +5428,7 @@ namespace Facade
                                 }
                                 else
                                 {
-                                    top = this.WrapInMrow (this.selectedNode);
+                                    top = this.WrapInMrow(this.selectedNode);
                                 }
                             }
                             else if (this.selectedNode.type_.type == ElementType.Entity)
@@ -5424,7 +5439,7 @@ namespace Facade
                                 }
                                 else
                                 {
-                                    top = this.TopContainer ();
+                                    top = this.TopContainer();
                                 }
                             }
                         }
@@ -5439,7 +5454,7 @@ namespace Facade
                 if (top != null)
                 {
                     this.HasSelection = false;
-                    this.SelectNode (top, false);
+                    this.SelectNode(top, false);
                 }
             }
             catch
@@ -5447,14 +5462,14 @@ namespace Facade
             }
         }
         //
-        private Node WrapInMrow (Node node)
+        private Node WrapInMrow(Node node)
         {
             Node row = null;
             try
             {
-                row = this.MakeNode ("mrow");
-                node.AdoptChild (row);
-                node.UpdateLevel ();
+                row = this.MakeNode("mrow");
+                node.AdoptChild(row);
+                node.UpdateLevel();
             }
             catch
             {
@@ -5462,7 +5477,7 @@ namespace Facade
             return row;
         }
         //
-        private Node TopContainer ()
+        private Node TopContainer()
         {
             Node container = null;
             try
@@ -5488,9 +5503,9 @@ namespace Facade
                     {
                         return first.firstChild;
                     }
-                    return this.WrapInMrow (first);
+                    return this.WrapInMrow(first);
                 }
-                return this.WrapInMrow (this.rootNode_);
+                return this.WrapInMrow(this.rootNode_);
             }
             catch
             {
@@ -5498,11 +5513,11 @@ namespace Facade
             }
         }
         //
-        public void MeasureAll ()
+        public void MeasureAll()
         {
             try
             {
-                this.SelectTop ();
+                this.SelectTop();
             }
             catch
             {
@@ -5520,40 +5535,40 @@ namespace Facade
             }
         }
         //
-        public void FillBackground (Rectangle rect)
+        public void FillBackground(Rectangle rect)
         {
             if (this.rootNode_ != null)
             {
-                this.rootNode_.print (rect, PaintMode.BACKGROUND, Color.Black);
+                this.rootNode_.print(rect, PaintMode.BACKGROUND, Color.Black);
             }
         }
         //
-        public void FillForeground (Rectangle rect)
+        public void FillForeground(Rectangle rect)
         {
             if (this.rootNode_ != null)
             {
-                this.rootNode_.print (rect, PaintMode.FOREGROUND, Color.Black);
+                this.rootNode_.print(rect, PaintMode.FOREGROUND, Color.Black);
             }
         }
         //
-        public void DrawRoot (Rectangle rect)
+        public void DrawRoot(Rectangle rect)
         {
             if (this.rootNode_ != null)
             {
-                this.FillBackground (rect);
-                this.FillForeground (rect);
+                this.FillBackground(rect);
+                this.FillForeground(rect);
             }
         }
         //
-        public void UpdateVertical ()
+        public void UpdateVertical()
         {
             if (this.rootNode_ != null)
             {
-                this.rootNode_.PropogateYOffset ();
+                this.rootNode_.PropogateYOffset();
             }
         }
         //
-        public bool IsValidXML (string xml)
+        public bool IsValidXML(string xml)
         {
             bool ok = true;
             XmlTextReader reader = null;
@@ -5565,25 +5580,25 @@ namespace Facade
             {
                 return false;
             }
-            xml = xml.Trim ();
-            if (xml.Substring (0, 5) != "<math")
+            xml = xml.Trim();
+            if (xml.Substring(0, 5) != "<math")
             {
                 return false;
             }
-            if (xml.Substring (xml.Length - 7, 7) != "</math>")
+            if (xml.Substring(xml.Length - 7, 7) != "</math>")
             {
                 return false;
             }
             try
             {
-                reader = new XmlTextReader (xml, XmlNodeType.Element, new XmlParserContext (null, new XmlNamespaceManager (new NameTable ()), null, XmlSpace.None));
-                XmlDocument document = new XmlDocument ();
+                reader = new XmlTextReader(xml, XmlNodeType.Element, new XmlParserContext(null, new XmlNamespaceManager(new NameTable()), null, XmlSpace.None));
+                XmlDocument document = new XmlDocument();
                 document.PreserveWhitespace = true;
                 reader.WhitespaceHandling = WhitespaceHandling.All;
-                reader.MoveToContent ();
-                string outerxml = reader.ReadOuterXml ();
-                xml = this.entityManager.GenerateXMLEntities (outerxml) + outerxml;
-                document.LoadXml (xml);
+                reader.MoveToContent();
+                string outerxml = reader.ReadOuterXml();
+                xml = this.entityManager.GenerateXMLEntities(outerxml) + outerxml;
+                document.LoadXml(xml);
             }
             catch
             {
@@ -5593,13 +5608,13 @@ namespace Facade
             {
                 if (reader != null)
                 {
-                    reader.Close ();
+                    reader.Close();
                 }
             }
             return ok;
         }
         //
-        public bool SelectToEnd ()
+        public bool SelectToEnd()
         {
             try
             {
@@ -5663,7 +5678,7 @@ namespace Facade
             return false;
         }
         //
-        public bool SelectToStart ()
+        public bool SelectToStart()
         {
             try
             {
@@ -5727,7 +5742,7 @@ namespace Facade
             return false;
         }
         //
-        public bool SelectAll ()
+        public bool SelectAll()
         {
             try
             {
@@ -5802,7 +5817,7 @@ namespace Facade
             return false;
         }
         //
-        public Node GetRootNode ()
+        public Node GetRootNode()
         {
             Node node = null;
             try
@@ -5811,7 +5826,7 @@ namespace Facade
                 {
                     return node;
                 }
-                
+
                 if (this.rootNode_.xmlTagName == "math")
                 {
                     node = this.rootNode_;
@@ -5827,14 +5842,14 @@ namespace Facade
             return node;
         }
         //
-        public bool SelectNode (int x, int y)
+        public bool SelectNode(int x, int y)
         {
             this.HasSelection = false;
             Node foundNode = null;
             try
             {
-                Point point = new Point (x, y);
-                CaretLocation caretLocation = new CaretLocation ();
+                Point point = new Point(x, y);
+                CaretLocation caretLocation = new CaretLocation();
                 try
                 {
                     if (this.rootNode_ != null)
@@ -5860,7 +5875,7 @@ namespace Facade
                 catch
                 {
                 }
-                foundNode = this.rootNode_.NodeAtPoint (point, caretLocation);
+                foundNode = this.rootNode_.NodeAtPoint(point, caretLocation);
                 if ((foundNode == null) || !foundNode.isVisible)
                 {
                     return false;
@@ -5872,7 +5887,7 @@ namespace Facade
                 {
                     foundNode = foundNode.parent_;
                 }
-                
+
                 if ((foundNode.level == 0))
                 {
                     return false;
@@ -5883,7 +5898,7 @@ namespace Facade
                 {
                     return false;
                 }
-                
+
                 if (foundNode.skip)
                 {
                     try
@@ -5892,11 +5907,11 @@ namespace Facade
                         {
                             if (caretLocation.pos == CaretPosition.Right)
                             {
-                                this.SelectNode (foundNode, true);
+                                this.SelectNode(foundNode, true);
                             }
                             else
                             {
-                                this.SelectNode (foundNode, false);
+                                this.SelectNode(foundNode, false);
                             }
                             return true;
                         }
@@ -5905,23 +5920,23 @@ namespace Facade
                             if ((foundNode.firstChild != null) &&
                                 (foundNode.firstChild.type_.type == ElementType.Mtd))
                             {
-                                Node child = this.ChildNodeFromPoint (foundNode, point.X, point.Y, caretLocation);
+                                Node child = this.ChildNodeFromPoint(foundNode, point.X, point.Y, caretLocation);
                                 if ((child != null) && (child.firstChild != null))
                                 {
-                                    Node target = this.ChildNodeFromPoint (child, point.X, point.Y, caretLocation);
+                                    Node target = this.ChildNodeFromPoint(child, point.X, point.Y, caretLocation);
                                     if (target != null)
                                     {
                                         if (caretLocation.pos == CaretPosition.Right)
                                         {
                                             if ((target.nextSibling != null) && target.nextSibling.isVisible)
                                             {
-                                                this.SelectNode (target.nextSibling, false);
+                                                this.SelectNode(target.nextSibling, false);
                                                 return true;
                                             }
-                                            this.SelectNode (target, true);
+                                            this.SelectNode(target, true);
                                             return true;
                                         }
-                                        this.SelectNode (target, false);
+                                        this.SelectNode(target, false);
                                         return true;
                                     }
                                 }
@@ -5935,20 +5950,20 @@ namespace Facade
                                 Node cell = foundNode;
                                 if ((cell != null) && (cell.firstChild != null))
                                 {
-                                    Node target = this.ChildNodeFromPoint (cell, point.X, point.Y, caretLocation);
+                                    Node target = this.ChildNodeFromPoint(cell, point.X, point.Y, caretLocation);
                                     if (target != null)
                                     {
                                         if (caretLocation.pos == CaretPosition.Right)
                                         {
                                             if ((target.nextSibling != null) && target.nextSibling.isVisible)
                                             {
-                                                this.SelectNode (target.nextSibling, false);
+                                                this.SelectNode(target.nextSibling, false);
                                                 return true;
                                             }
-                                            this.SelectNode (target, true);
+                                            this.SelectNode(target, true);
                                             return true;
                                         }
-                                        this.SelectNode (target, false);
+                                        this.SelectNode(target, false);
                                         return true;
                                     }
                                 }
@@ -5963,8 +5978,8 @@ namespace Facade
                     {
                         return false;
                     }
-                    this.SelectNode (foundNode, false);
-                    return this.GoRight ();
+                    this.SelectNode(foundNode, false);
+                    return this.GoRight();
                 }
                 if (foundNode.isGlyph)
                 {
@@ -5972,17 +5987,17 @@ namespace Facade
                     {
                         return false;
                     }
-                    this.SelectNode (foundNode, false);
-                    return this.GoLeft ();
+                    this.SelectNode(foundNode, false);
+                    return this.GoLeft();
                 }
                 if ((foundNode.IsAtom() && (foundNode.literalText != null)) && (foundNode.literalText.Length > 1))
                 {
-                    this.SelectNode (foundNode, false);
-                    this.selectedNode.MarkFromPoint (point);
+                    this.SelectNode(foundNode, false);
+                    this.selectedNode.MarkFromPoint(point);
                     this.selectedNode.LiteralStart = this.selectedNode.LiteralStart;
                     return true;
                 }
-                
+
                 if (caretLocation.pos == CaretPosition.Right)
                 {
                     if ((foundNode.level == 0))
@@ -5991,10 +6006,10 @@ namespace Facade
                     }
                     if (foundNode.nextSibling != null)
                     {
-                        this.SelectNode (foundNode, false);
-                        return this.GoRight ();
+                        this.SelectNode(foundNode, false);
+                        return this.GoRight();
                     }
-                    this.SelectNode (foundNode, true);
+                    this.SelectNode(foundNode, true);
                 }
                 else
                 {
@@ -6002,18 +6017,18 @@ namespace Facade
                     {
                         return false;
                     }
-                    this.SelectNode (foundNode, false);
+                    this.SelectNode(foundNode, false);
                 }
                 return true;
             }
             catch
             {
             }
-            
+
             return false;
         }
         //
-        public void SelectNode (Node node, bool markAppend)
+        public void SelectNode(Node node, bool markAppend)
         {
             try
             {
@@ -6021,7 +6036,7 @@ namespace Facade
                 {
                     return;
                 }
-                
+
                 this.lastSelectedNode = this.selectedNode;
                 this.selectedNode = node;
                 try
@@ -6035,7 +6050,7 @@ namespace Facade
                 catch
                 {
                 }
-                
+
                 this.selectedNode.IsAppend = markAppend;
             }
             catch
@@ -6056,13 +6071,13 @@ namespace Facade
             }
         }
         //
-        public void RemoveSelection ()
+        public void RemoveSelection()
         {
             try
             {
                 if (this.HasSelection)
                 {
-                    Node cur = this.GetCurrentlySelectedNode ();
+                    Node cur = this.GetCurrentlySelectedNode();
                     if ((cur != this.multiSelectNode) || (cur.InternalMark != this.currentCaret))
                     {
                         return;
@@ -6075,7 +6090,7 @@ namespace Facade
             }
         }
         //
-        private Node ChildNodeFromPoint (Node Parent_Node, int x, int y, CaretLocation result)
+        private Node ChildNodeFromPoint(Node Parent_Node, int x, int y, CaretLocation result)
         {
             Node node = null;
             try
@@ -6083,7 +6098,7 @@ namespace Facade
                 bool done = false;
                 int i = 0;
                 NodesList childrenNodes = null;
-                childrenNodes = Parent_Node.GetChildrenNodes ();
+                childrenNodes = Parent_Node.GetChildrenNodes();
                 int count = 0;
                 if (childrenNodes == null)
                 {
@@ -6093,7 +6108,7 @@ namespace Facade
                 while (!done && (i < count))
                 {
                     Node child = null;
-                    child = childrenNodes.Get (i);
+                    child = childrenNodes.Get(i);
                     if ((child != null) && child.isVisible)
                     {
                         if ((x >= child.box.X) && (x <= (child.box.X + (child.box.Width / 2))))
@@ -6122,7 +6137,7 @@ namespace Facade
             return node;
         }
         //
-        public bool SelectionTo (int x, int y)
+        public bool SelectionTo(int x, int y)
         {
             try
             {
@@ -6211,7 +6226,7 @@ namespace Facade
                             return false;
                         }
                     }
-                    
+
                     mcell = nodeatPoint;
                     if (mcell.level > 4)
                     {
@@ -6279,7 +6294,7 @@ namespace Facade
                         return false;
                     }
                 }
-                
+
                 if (((nodeatPoint.parent_ == null) || (lastSelected.parent_ == null)) || (lastSelected.parent_ != nodeatPoint.parent_))
                 {
                     Node n = nodeatPoint;
@@ -6290,7 +6305,7 @@ namespace Facade
                     if ((n.parent_ == lastSelected.parent_) && n.isVisible)
                     {
                         nodeatPoint = n;
-                        if ((point.X >= (nodeatPoint.box.X + (nodeatPoint.box.Width/2))) &&
+                        if ((point.X >= (nodeatPoint.box.X + (nodeatPoint.box.Width / 2))) &&
                             (point.X <= (nodeatPoint.box.X + nodeatPoint.box.Width)))
                         {
                             location.pos = CaretPosition.Right;
@@ -6311,7 +6326,7 @@ namespace Facade
                     {
                         return false;
                     }
-                    
+
                     if ((nodeatPoint.IsAtom() && (nodeatPoint.literalText != null)) && (nodeatPoint.literalText.Length > 1))
                     {
                         this.SelectNode(nodeatPoint, false);
@@ -6339,7 +6354,7 @@ namespace Facade
             }
             return false;
         }
-        
+
         //
         private bool IsMultiline
         {
@@ -6386,7 +6401,7 @@ namespace Facade
                 {
                     try
                     {
-                        this.painter_.SetFontSize (this.FontSize);
+                        this.painter_.SetFontSize(this.FontSize);
                     }
                     catch
                     {
@@ -6404,7 +6419,7 @@ namespace Facade
                 {
                     return 0;
                 }
-                
+
                 if (this.rootNode_.box != null)
                 {
                     r = this.rootNode_.box.Height;
@@ -6447,12 +6462,12 @@ namespace Facade
         {
             get
             {
-                Node n = this.GetCurrentlySelectedNode ();
+                Node n = this.GetCurrentlySelectedNode();
                 if (n != null && n.type_ != null && n.type_.type != ElementType.Math)
-                        {
-                            return true;
-                        }
-                        
+                {
+                    return true;
+                }
+
                 return false;
             }
         }
@@ -6463,7 +6478,7 @@ namespace Facade
             set
             {
                 this.hasSelection = value;
-                
+
                 if (!this.hasSelection)
                 {
                     this.multiSelectNode = null;
@@ -6471,7 +6486,7 @@ namespace Facade
                 }
                 else
                 {
-                    this.multiSelectNode = this.GetCurrentlySelectedNode ();
+                    this.multiSelectNode = this.GetCurrentlySelectedNode();
                 }
             }
         }
@@ -6487,7 +6502,7 @@ namespace Facade
         public Rectangle bounds;
         public string mathmlNamespace;
         private bool canUndo_;
-        
+
         private Painter painter_;
         public Types types_;
         private Node rootNode_;
